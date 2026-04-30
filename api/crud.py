@@ -59,7 +59,7 @@ def get_schools(
     query = db.query(School)
 
     if jenjang:
-        query = query.filter(School.jenjang.ilike(jenjang))
+        query = query.filter(School.jenjang.ilike(f"%{jenjang}%"))
     if kecamatan:
         query = query.filter(School.kecamatan.ilike(f"%{kecamatan}%"))
     if status:
