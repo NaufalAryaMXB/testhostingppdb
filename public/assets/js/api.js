@@ -37,6 +37,9 @@ export async function fetchSekolah(filters = {}) {
     if (filters.kat) params.set('jenjang', filters.kat);
     if (filters.kecamatan) params.set('kecamatan', filters.kecamatan);
     if (filters.nama) params.set('nama', filters.nama);
+    if (Number.isFinite(filters.lat)) params.set('lat', filters.lat);
+    if (Number.isFinite(filters.lng)) params.set('lng', filters.lng);
+    if (Number.isFinite(filters.radius)) params.set('radius', filters.radius);
 
     const url = params.toString() ? `${API_URL}?${params.toString()}` : API_URL;
 

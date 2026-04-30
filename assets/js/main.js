@@ -187,23 +187,37 @@ function showZonasiResultStep(lat, lng, label) {
   document.getElementById('zonasi-input-step').classList.add('hidden');
   document.getElementById('zonasi-result-step').classList.remove('hidden');
 
+  const applyLocation = async () => {
+    setUserLocation({ lat, lng });
+    setUserMarker(lat, lng);
+    updateCircle(lat, lng, getRadius());
+    try {
+      const { data } = await fetchSekolah({
+        kat: _zonFilterKat,
+        kecamatan: _zonasiKecamatan,
+        lat,
+        lng,
+        radius: getRadius(),
+      });
+      setSchools(data);
+      _zonasiPageNum = 1;
+    } catch (err) {
+      console.warn('[Zonasi] Gagal memuat data radius dari API:', err);
+      showToast('Data radius gagal diperbarui, memakai data terakhir', 'info');
+    }
+    renderZonasiPage();
+    invalidateMaps();
+  };
+
   // Init peta hanya sekali
   if (!_zonasiInitDone) {
     _zonasiInitDone = true;
     setTimeout(() => {
       initZonasiPage();
-      setUserLocation({ lat, lng });
-      setUserMarker(lat, lng);
-      updateCircle(lat, lng, getRadius());
-      renderZonasiPage();
-      invalidateMaps();
+      applyLocation();
     }, 60);
   } else {
-    setUserLocation({ lat, lng });
-    setUserMarker(lat, lng);
-    updateCircle(lat, lng, getRadius());
-    renderZonasiPage();
-    setTimeout(invalidateMaps, 60);
+    applyLocation();
   }
 }
 
@@ -598,9 +612,10 @@ function renderZonasiPage() {
     akreditasi: _zonFilterAkreditasi,
     biayaMax: _zonFilterBiayaMax
   });
-  const areaFiltered = _zonasiKecamatan
+  const kecamatanFiltered = _zonasiKecamatan
     ? filterSchoolsByKecamatan(baseFiltered, _zonasiKecamatan)
-    : filterSchoolsByRadius(baseFiltered);
+    : baseFiltered;
+  const areaFiltered = filterSchoolsByRadius(kecamatanFiltered);
   const sorted = sortByDistance(areaFiltered, getUserLocation());
   const { items, page, total } = paginate(sorted, _zonasiPageNum, 8);
   renderZonasiMarkers(limitSchoolsForMarkerRendering(sorted));
@@ -878,7 +893,14 @@ function bindEvents() {
     
     showLoading();
     try {
-      const { data } = await fetchSekolah({ kat: _zonFilterKat, kecamatan: _zonasiKecamatan });
+      const loc = getUserLocation();
+      const { data } = await fetchSekolah({
+        kat: _zonFilterKat,
+        kecamatan: _zonasiKecamatan,
+        lat: loc?.lat,
+        lng: loc?.lng,
+        radius: loc ? getRadius() : undefined,
+      });
       console.log(`[Zonasi] Fetched ${data.length} schools for ${_zonasiKecamatan}`);
       setSchools(data);
       _zonasiPageNum = 1; 
@@ -899,7 +921,12 @@ function bindEvents() {
     
     showLoading();
     try {
-      const { data } = await fetchSekolah();
+      const loc = getUserLocation();
+      const { data } = await fetchSekolah({
+        lat: loc?.lat,
+        lng: loc?.lng,
+        radius: loc ? getRadius() : undefined,
+      });
       setSchools(data);
       _zonasiPageNum = 1; 
       renderZonasiPage();

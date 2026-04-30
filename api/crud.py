@@ -1,3 +1,5 @@
+import math
+
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from .models import School, User, Zonasi
@@ -54,7 +56,10 @@ def get_schools(
     jenjang: str | None = None,
     kecamatan: str | None = None,
     status: str | None = None,
-    nama: str | None = None
+    nama: str | None = None,
+    latitude: float | None = None,
+    longitude: float | None = None,
+    radius_km: float | None = None,
 ):
     query = db.query(School)
 
@@ -72,6 +77,25 @@ def get_schools(
         query = query.filter(School.status.ilike(status))
     if nama:
         query = query.filter(School.nama_sekolah.ilike(f"%{nama}%"))
+
+    if latitude is not None and longitude is not None and radius_km is not None:
+        safe_radius = max(0.1, min(float(radius_km), 50.0))
+        lat_delta = safe_radius / 111.32
+        lng_divisor = 111.32 * max(math.cos(math.radians(latitude)), 0.01)
+        lng_delta = safe_radius / lng_divisor
+
+        query = query.filter(
+            School.latitude.isnot(None),
+            School.longitude.isnot(None),
+            School.latitude.between(latitude - lat_delta, latitude + lat_delta),
+            School.longitude.between(longitude - lng_delta, longitude + lng_delta),
+        )
+
+        distance_order = (
+            (School.latitude - latitude) * (School.latitude - latitude)
+            + (School.longitude - longitude) * (School.longitude - longitude)
+        )
+        return query.order_by(distance_order.asc(), School.nama_sekolah.asc()).limit(5000).all()
 
     return query.order_by(School.nama_sekolah.asc()).limit(1000).all()
 

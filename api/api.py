@@ -112,6 +112,9 @@ def list_schools(
     kecamatan: Optional[str] = Query(default=None),
     status_filter: Optional[str] = Query(default=None, alias="status"),
     nama: Optional[str] = Query(default=None),
+    lat: Optional[float] = Query(default=None),
+    lng: Optional[float] = Query(default=None),
+    radius: Optional[float] = Query(default=None),
     db: Session = Depends(get_db)
 ):
     return get_schools(
@@ -119,7 +122,10 @@ def list_schools(
         jenjang=jenjang,
         kecamatan=kecamatan,
         status=status_filter,
-        nama=nama
+        nama=nama,
+        latitude=lat,
+        longitude=lng,
+        radius_km=radius,
     )
 
 
@@ -207,6 +213,9 @@ def map_schools(
     kecamatan: Optional[str] = Query(default=None),
     status_filter: Optional[str] = Query(default=None, alias="status"),
     nama: Optional[str] = Query(default=None),
+    lat: Optional[float] = Query(default=None),
+    lng: Optional[float] = Query(default=None),
+    radius: Optional[float] = Query(default=None),
     db: Session = Depends(get_db)
 ):
     schools = get_schools(
@@ -214,7 +223,10 @@ def map_schools(
         jenjang=jenjang,
         kecamatan=kecamatan,
         status=status_filter,
-        nama=nama
+        nama=nama,
+        latitude=lat,
+        longitude=lng,
+        radius_km=radius,
     )
     return schools
 
