@@ -207,6 +207,13 @@ function showZonasiResultStep(lat, lng, label) {
   }
 }
 
+// Global handler untuk marker drag di map.js
+window.onUserMarkerDrag = (lat, lng) => {
+  const label = `Pin Manual (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+  showZonasiResultStep(lat, lng, label);
+  showToast('Lokasi diperbarui manual 📍', 'info');
+};
+
 /* ══════════════════════════════════════════════════
    GEOLOCATION
 ══════════════════════════════════════════════════ */

@@ -503,11 +503,19 @@ export function setUserMarker(lat, lng) {
     _userMarker = L.marker([lat, lng], {
       icon: makeUserIcon(),
       zIndexOffset: 9999,
+      draggable: true
     })
       .addTo(_zonasiPage)
-      .bindPopup('<b>📍 Lokasi Saya</b>');
+      .bindPopup('<b>📍 Lokasi Saya</b><br><small>Tarik ikon ini jika posisi kurang akurat</small>');
+    
+    _userMarker.on('dragend', function(e) {
+      const { lat, lng } = e.target.getLatLng();
+      if (typeof window.onUserMarkerDrag === 'function') {
+        window.onUserMarkerDrag(lat, lng);
+      }
+    });
   }
-  _zonasiPage.setView([lat, lng], 12, { animate: true });
+  _zonasiPage.setView([lat, lng], 14, { animate: true });
 }
 
 export function updateCircle(lat, lng, radiusKm) {
