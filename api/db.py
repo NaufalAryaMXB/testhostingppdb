@@ -11,6 +11,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     print("WARNING: DATABASE_URL is not set. Menggunakan SQLite sementara.")
     DATABASE_URL = "sqlite:///./dummy.db"
+else:
+    DATABASE_URL = DATABASE_URL.strip()
 
 engine = create_engine(DATABASE_URL)
 
