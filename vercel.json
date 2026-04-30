@@ -18,8 +18,6 @@
     { "source": "/map/:path*", "destination": "/backend/app/main.py" },
     { "source": "/map", "destination": "/backend/app/main.py" },
     { "source": "/operator/:path*", "destination": "/backend/app/main.py" },
-    { "source": "/operator", "destination": "/backend/app/main.py" },
-    { "source": "/", "destination": "/frontend/index.html" },
-    { "source": "/:path*", "destination": "/frontend/:path*" }
+    { "source": "/operator", "destination": "/backend/app/main.py" }
   ]
 }
