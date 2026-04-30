@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from mangum import Mangum
 from .api import router
 
-app = FastAPI(root_path="/api")
+app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent.parent
 INDEX_FILE = BASE_DIR / "index.html"
 ASSETS_DIR = BASE_DIR / "assets"
@@ -19,7 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+app.include_router(router, prefix="/api")
 
 if ASSETS_DIR.exists():
     app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
