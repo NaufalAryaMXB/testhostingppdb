@@ -23,6 +23,22 @@ app.add_middleware(
 def ping():
     return {"status": "ok"}
 
+@app.get("/api/debug")
+def debug():
+    import os
+    db_url = os.getenv("DATABASE_URL", "NOT_SET")
+    masked_url = db_url[:15] + "..." + db_url[-10:] if len(db_url) > 20 else db_url
+    
+    try:
+        from api.db import SessionLocal
+        from sqlalchemy import text
+        db = SessionLocal()
+        result = db.execute(text("SELECT 1")).scalar()
+        return {"status": "ok", "url": masked_url, "db_test": result}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "url": masked_url, "error": str(e), "trace": traceback.format_exc()}
+
 app.include_router(router, prefix="/api")
 
 if ASSETS_DIR.exists():
