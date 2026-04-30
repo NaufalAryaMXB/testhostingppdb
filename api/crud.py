@@ -59,7 +59,13 @@ def get_schools(
     query = db.query(School)
 
     if jenjang:
-        query = query.filter(School.jenjang.ilike(f"%{jenjang}%"))
+        from sqlalchemy import or_
+        query = query.filter(or_(
+            School.jenjang.ilike(f"%{jenjang}%"),
+            School.nama_sekolah.ilike(f"% {jenjang} %"),
+            School.nama_sekolah.ilike(f"{jenjang} %"),
+            School.nama_sekolah.ilike(f"% {jenjang}")
+        ))
     if kecamatan:
         query = query.filter(School.kecamatan.ilike(f"%{kecamatan}%"))
     if status:

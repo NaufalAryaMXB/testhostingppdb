@@ -53,7 +53,13 @@ export function filterSchools(schools, { nama = '', kat = '', biayaMax = '', akr
 
   return schools.filter(s => {
     const okNama = !q || (s.nama || '').toLowerCase().includes(q);
-    const okKat  = !k || (s.jenjang || '').toUpperCase().includes(k);
+    
+    // Gunakan jenjang dari DB, atau deteksi dari nama jika kosong
+    const effectiveJenjang = (s.jenjang && s.jenjang !== '-') 
+      ? s.jenjang 
+      : detectJenjang(s.nama);
+
+    const okKat  = !k || effectiveJenjang.toUpperCase().includes(k);
     const okAkr  = !a || (s.akreditasi || '').toUpperCase() === a;
     const okBiaya = !biayaMax || Number(s.biaya || 0) <= Number(biayaMax);
     return okNama && okKat && okAkr && okBiaya;
