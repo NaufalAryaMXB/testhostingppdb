@@ -3,7 +3,7 @@
  * Fetch data dari endpoint, fallback ke data lokal jika gagal.
  */
 
-const API_BASE = '';  // relative — works on any domain
+const API_BASE = '/api';  // relative — works on any domain
 const API_URL = `${API_BASE}/map/schools`;
 const ZONASI_URL = `${API_BASE}/zonasi`;
 const ZONASI_GEOJSON_URL = `${API_BASE}/zonasi/geojson`;
