@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/app/main.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/auth/(.*)", "dest": "backend/app/main.py" },
+    { "src": "/auth", "dest": "backend/app/main.py" },
+    { "src": "/schools/(.*)", "dest": "backend/app/main.py" },
+    { "src": "/schools", "dest": "backend/app/main.py" },
+    { "src": "/zonasi/(.*)", "dest": "backend/app/main.py" },
+    { "src": "/zonasi", "dest": "backend/app/main.py" },
+    { "src": "/map/(.*)", "dest": "backend/app/main.py" },
+    { "src": "/operator/(.*)", "dest": "backend/app/main.py" },
+    { "src": "/assets/(.*)", "dest": "frontend/assets/$1" },
+    { "src": "/(.*\\.html)$", "dest": "frontend/$1" },
+    { "src": "/(.*\\.css)$", "dest": "frontend/$1" },
+    { "src": "/(.*\\.js)$", "dest": "frontend/$1" },
+    { "src": "/", "dest": "frontend/index.html" }
+  ],
+  "outputDirectory": "."
+}

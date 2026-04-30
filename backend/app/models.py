@@ -1,0 +1,61 @@
+from sqlalchemy import Column, Float, ForeignKey, Integer, String, TIMESTAMP
+from datetime import datetime
+from .db import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True)
+    email = Column(String, unique=True)
+    password_hash = Column(String)
+    role = Column(String, default="user")
+    school_id = Column(Integer, ForeignKey("sekolah.sekolah_id"), nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+
+class School(Base):
+    __tablename__ = "sekolah"
+
+    sekolah_id = Column(Integer, primary_key=True, index=True)
+    nama_sekolah = Column(String)
+    npsn = Column(String, unique=True, index=True)
+    jenjang = Column(String)
+    alamat = Column(String)
+    kecamatan = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    kuota = Column(Integer)
+    daya_tampung = Column(Integer)
+    biaya = Column(Integer)
+    status = Column(String)
+    akreditasi = Column(String)
+
+
+class Zonasi(Base):
+    __tablename__ = "zonasi"
+
+    zonasi_id = Column(Integer, primary_key=True, index=True)
+    nama_zonasi = Column(String)
+    radius_meter = Column(Float)
+    wilayah = Column(String)
+    keterangan = Column(String)
+    objectid = Column(Integer)
+    fcode = Column(String)
+    remark = Column(String)
+    metadata_value = Column("metadata", String)
+    srs_id = Column(String)
+    kode_kecamatan = Column(String)
+    kode_desa = Column(String)
+    kode_kabupaten = Column(String)
+    kode_provinsi = Column(String)
+    nama_kecamatan = Column(String)
+    nama_desa = Column(String)
+    nama_kabupaten = Column(String)
+    nama_provinsi = Column(String)
+    tipadm = Column(Integer)
+    luaswh = Column(Float)
+    uupp = Column(String)
+    shape_length = Column(Float)
+    shape_area = Column(Float)

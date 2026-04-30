@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Zonasi Jabar | SIG Sekolah</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/css/style.css"/>
+</head>
+<body>
+<div class="app-backdrop"></div>
+
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="loader-shell">
+    <div class="loader-orbit"></div>
+    <div class="loader-core"></div>
+  </div>
+  <p class="loader-text">Memuat data aplikasi...</p>
+</div>
+<div id="toast" class="toast"></div>
+
+<div class="app-shell">
+  <header class="site-header navbar">
+    <div class="site-brand">
+      <div class="brand-copy">
+        <p class="brand-overline">Geospatial School System</p>
+        <h1>SIG Zonasi Jabar</h1>
+      </div>
+    </div>
+
+    <nav class="site-nav">
+      <a href="#" class="nav-link active" data-page="landing">Home</a>
+      <a href="#" class="nav-link requires-login-nav" data-page="main">Page Utama</a>
+      <a href="#" class="nav-link requires-login-nav" data-page="map">Peta Sekolah</a>
+      <a href="#" class="nav-link requires-login-nav" data-page="zonasi">Cek Zonasi</a>
+      <a href="#" class="nav-link" data-page="about">Tentang</a>
+    </nav>
+
+    <div class="site-actions">
+      <div id="search-bar-row" class="header-search hidden">
+        <input type="search" id="global-search" class="fi" placeholder="Cari sekolah"/>
+      </div>
+      <div class="navbar-right"></div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section id="page-landing" class="page active page-scroll">
+      <div class="public-page landing-page">
+        <section class="landing-hero">
+          <div class="landing-copy">
+            <p class="eyebrow">Platform geospasial pendidikan untuk masyarakat Jawa Barat</p>
+            <h2>Masuk ke Sistem Zonasi Sekolah yang Lebih Jelas, Modern, dan Mudah Dipahami</h2>
+            <p class="hero-text">
+              Halaman pembuka ini membantu pengguna memahami fungsi sistem lebih dulu, lalu masuk ke portal utama untuk melihat peta sekolah, cek domisili, dan eksplorasi data zonasi.
+            </p>
+            <div class="hero-actions">
+              <button class="btn-glow" data-page="login">Login untuk Masuk Aplikasi</button>
+              <button class="btn-ghost" data-page="about">Pelajari Sistem</button>
+            </div>
+          </div>
+
+          <div class="landing-visual">
+            <div class="landing-orb orb-a"></div>
+            <div class="landing-orb orb-b"></div>
+            <div class="landing-panel">
+              <div class="landing-mini-card">
+                <span class="landing-stat">27+</span>
+                <p>Kabupaten/Kota terjangkau dalam satu portal eksplorasi.</p>
+              </div>
+              <div class="landing-mini-card">
+                <span class="landing-stat">Real-time</span>
+                <p>Data sekolah, zonasi, dan pencarian lokasi dalam satu alur yang lebih mudah dipakai.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="landing-steps">
+          <article class="landing-step-card">
+            <span>01</span>
+            <h3>Pahami Dulu</h3>
+            <p>Lihat gambaran sistem dan tujuan platform sebelum mulai mengecek sekolah.</p>
+          </article>
+          <article class="landing-step-card">
+            <span>02</span>
+            <h3>Masuk ke Portal</h3>
+            <p>Buka halaman utama untuk melihat fitur publik seperti peta sekolah dan rekomendasi lokasi.</p>
+          </article>
+          <article class="landing-step-card">
+            <span>03</span>
+            <h3>Mulai Eksplorasi</h3>
+            <p>Cek zonasi, bandingkan sekolah, dan gunakan data lokasi dengan lebih percaya diri.</p>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-main" class="page page-scroll">
+      <div class="public-page">
+        <section class="hero-card">
+          <div class="hero-copy">
+            <p class="eyebrow">Sistem informasi geospasial resmi untuk pemetaan sekolah di Jawa Barat</p>
+            <h2>Temukan Sekolah Terdekat dan Cek Zonasi Secara Akurat</h2>
+            <p class="hero-text">
+              Dapatkan informasi detail mengenai jarak lokasi Anda ke sekolah, status kuota pendaftaran, dan rekomendasi sekolah dalam zona domisili.
+            </p>
+            <div class="hero-actions">
+              <button class="btn-glow" data-page="zonasi">Mulai Cek Zonasi</button>
+              <button class="btn-ghost" data-page="map">Lihat Peta Sekolah</button>
+            </div>
+
+            <div class="hero-trust">
+              <div class="trust-avatars">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div>
+                <strong>Dipercaya sebagai portal eksplorasi publik</strong>
+                <p>Dirancang agar mudah dipahami oleh orang tua, siswa, dan masyarakat umum.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <div class="map-showcase">
+              <div class="map-toolbar">
+                <span class="toolbar-pill large"></span>
+                <span class="toolbar-pill"></span>
+                <span class="toolbar-pill"></span>
+                <span class="toolbar-pill small"></span>
+              </div>
+              <div class="map-gridlines"></div>
+              <div class="map-overlay-card">
+                <div class="map-overlay-icon"></div>
+                <div>
+                  <strong>SMA Negeri 1 Bandung</strong>
+                  <p>Jarak: 1.2 km - Kuota: Tersedia</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section-shell soft-panel">
+          <div class="section-heading center">
+            <h3>Fitur Utama Sistem Zonasi</h3>
+            <p>Teknologi pemetaan mutakhir untuk memastikan transparansi dan akurasi dalam proses seleksi penerimaan siswa baru.</p>
+          </div>
+
+          <div class="feature-grid">
+            <article class="feature-card feature-card-wide">
+              <div class="feature-icon blue"></div>
+              <h4>Deteksi Lokasi Otomatis</h4>
+              <p>Sistem secara instan mendeteksi koordinat Anda untuk memetakan sekolah-sekolah terdekat dengan akurasi GPS tinggi.</p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon peach"></div>
+              <h4>Informasi Kuota Real-time</h4>
+              <p>Pantau ketersediaan kursi di setiap sekolah secara langsung dan lebih transparan.</p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon green"></div>
+              <h4>Akurasi Jarak Presisi</h4>
+              <p>Perhitungan jarak udara berdasarkan koordinat rumah dan sekolah untuk membantu validasi domisili.</p>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-icon rose"></div>
+              <h4>Peta Interaktif Detail</h4>
+              <p>Eksplorasi visual zona sekolah dengan layer batas wilayah, marker sekolah, dan data lokasi pengguna.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Preview sekolah</p>
+              <h3>Rekomendasi Sekolah Populer</h3>
+            </div>
+            <div class="card-pager">
+              <button id="home-prev" class="pg-btn">Prev</button>
+              <span id="home-page-info">Page 1 of 1</span>
+              <button id="home-next" class="pg-btn">Next</button>
+            </div>
+          </div>
+
+          <div id="home-tbody" class="school-preview-grid">
+            <article class="school-preview-card loading-card">Memuat data sekolah...</article>
+          </div>
+
+          <div class="news-pager hidden">
+            <button id="berita-prev" class="pg-btn">Prev</button>
+            <button id="berita-next" class="pg-btn">Next</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-map" class="page page-full">
+      <div class="map-page-shell">
+        <aside class="workspace-panel map-panel-public" id="map-filter-box">
+          <div class="workspace-head">
+            <p class="card-kicker">Explorer</p>
+            <h2>Peta Sekolah</h2>
+            <p>Lihat persebaran sekolah, filter berdasarkan kategori, dan tampilkan outline zonasi per kecamatan.</p>
+          </div>
+
+          <div class="workspace-filters fp-filters">
+            <div class="fg2">
+              <label for="map-kat">Jenjang</label>
+              <select class="fi" id="map-kat">
+                <option value="">Semua</option>
+                <option value="SD">SD</option>
+                <option value="SMP">SMP</option>
+                <option value="SMA">SMA</option>
+                <option value="SMK">SMK</option>
+              </select>
+            </div>
+            <div class="fg2">
+              <label for="map-kecamatan-zonasi">Outline Zonasi</label>
+              <select class="fi" id="map-kecamatan-zonasi">
+                <option value="">Pilih Kecamatan</option>
+              </select>
+            </div>
+            <div class="fg2">
+              <label for="filter-akreditasi">Akreditasi</label>
+              <select id="filter-akreditasi" class="fi">
+                <option value="">Semua</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+            <div class="fg2">
+              <label for="map-biaya">Biaya</label>
+              <select class="fi" id="map-biaya">
+                <option value="">Semua</option>
+                <option value="gratis">Gratis</option>
+                <option value="murah">Murah</option>
+              </select>
+            </div>
+            <div class="fg2">
+              <label for="filter-biaya">Maksimum Biaya</label>
+              <input type="number" id="filter-biaya" class="fi" placeholder="Rp"/>
+            </div>
+            <div class="fg2 zonasi-outline-note" id="map-zonasi-status">Outline zonasi akan dimuat setelah kecamatan dipilih.</div>
+            <div class="fg2 fg2-btns">
+              <button class="btn-sm-outline" id="map-clear">Reset</button>
+              <button class="btn-sm-fill" id="map-apply">Terapkan</button>
+            </div>
+          </div>
+
+          <div class="workspace-list fp-list">
+            <div class="card-head compact">
+              <div>
+                <p class="card-kicker">Hasil</p>
+                <h3>Daftar sekolah</h3>
+              </div>
+            </div>
+            <ul class="school-list" id="map-list"></ul>
+            <div class="fp-pg">
+              <button class="pg-btn" id="map-prev">Prev</button>
+              <span id="map-page-info">Page 1 of 1</span>
+              <button class="pg-btn" id="map-next">Next</button>
+            </div>
+          </div>
+        </aside>
+
+        <div class="map-canvas">
+          <div id="map-view" class="fullmap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-zonasi" class="page page-scroll">
+      <div id="zonasi-input-step" class="public-page zonasi-public">
+        <div class="section-heading zonasi-heading">
+          <div>
+            <h2>Cek Sekolah Terdekat dari Lokasi Anda</h2>
+            <p>Tentukan titik koordinat domisili Anda untuk melihat estimasi jarak, kuota, dan peluang diterima di sekolah-sekolah terdekat berdasarkan sistem zonasi.</p>
+          </div>
+        </div>
+
+        <div class="zonasi-split">
+          <aside class="zonasi-locator">
+            <div class="locator-card">
+              <h3>Tentukan Lokasi</h3>
+
+              <div class="loc-tabs">
+                <button class="loc-tab active" data-tab="gps">GPS Saat Ini</button>
+                <button class="loc-tab" data-tab="koordinat">Koordinat</button>
+                <button class="loc-tab" data-tab="kota">Kota/Kabupaten</button>
+              </div>
+
+              <div class="loc-tab-panel active" id="tab-gps">
+                <p class="tab-desc">Gunakan lokasi perangkat Anda untuk menghitung sekolah dalam radius terdekat.</p>
+                <button class="btn-glow full-w" id="btn-geoloc">Gunakan GPS Saat Ini</button>
+                <div id="gps-status" class="gps-status"></div>
+              </div>
+
+              <div class="loc-tab-panel" id="tab-koordinat">
+                <div class="row2">
+                  <div class="fg">
+                    <label for="input-lat">Latitude</label>
+                    <input type="number" id="input-lat" class="fi" placeholder="-6.9"/>
+                  </div>
+                  <div class="fg">
+                    <label for="input-lng">Longitude</label>
+                    <input type="number" id="input-lng" class="fi" placeholder="107.6"/>
+                  </div>
+                </div>
+                <button class="btn-glow full-w" id="btn-submit-koordinat">Gunakan koordinat</button>
+              </div>
+
+              <div class="loc-tab-panel" id="tab-kota">
+                <div class="fg">
+                  <label for="input-kota-search">Cari kota atau kabupaten</label>
+                  <div class="kota-search-wrap">
+                    <input type="search" id="input-kota-search" class="fi" placeholder="Ketik nama wilayah"/>
+                    <div id="kota-dropdown" class="dropdown-list"></div>
+                  </div>
+                </div>
+                <div id="kota-selected-info" class="status-text"></div>
+                <button class="btn-glow full-w" id="btn-submit-kota" disabled>Pakai wilayah ini</button>
+              </div>
+
+              <div class="radius-wrap">
+                <label>Radius (km)</label>
+                <div class="radius-row">
+                  <input type="number" id="radius-num" value="5" class="fi fi-short"/>
+                  <input type="range" id="radius-range" value="5" min="0.1" max="20" step="0.1" class="slider"/>
+                </div>
+              </div>
+
+              <div class="locator-preview-map">
+                <div class="mini-map-pin"></div>
+                <div class="mini-map-zoom">
+                  <span>+</span>
+                  <span>-</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="zonasi-showcase">
+            <div class="section-heading results-head">
+              <h3>Rekomendasi Sekolah Terdekat</h3>
+              <span class="result-badge">Gunakan lokasi untuk melihat hasil</span>
+            </div>
+
+            <div class="recommendation-grid">
+              <article class="recommendation-card">
+                <span class="chance-pill high">Peluang Tinggi</span>
+                <h4>SMAN 20 Bandung</h4>
+                <p>Jl. Citarum No.23, Cihapit, Bandung Wetan</p>
+                <div class="recommendation-meta">
+                  <strong>0.8 km</strong>
+                  <span>Sisa Kuota: 45</span>
+                </div>
+                <div class="recommendation-foot">
+                  <span>Zona Dalam</span>
+                  <a href="#" data-page="map">Lihat Detail</a>
+                </div>
+              </article>
+
+              <article class="recommendation-card">
+                <span class="chance-pill medium">Peluang Sedang</span>
+                <h4>SMAN 3 Bandung</h4>
+                <p>Jl. Belitung No.8, Sumur Bandung</p>
+                <div class="recommendation-meta">
+                  <strong>1.5 km</strong>
+                  <span>Sisa Kuota: 12</span>
+                </div>
+                <div class="recommendation-foot">
+                  <span>Zona Dalam</span>
+                  <a href="#" data-page="map">Lihat Detail</a>
+                </div>
+              </article>
+
+              <article class="recommendation-card">
+                <span class="chance-pill low">Peluang Rendah</span>
+                <h4>SMAN 5 Bandung</h4>
+                <p>Jl. Belitung No.8, Sumur Bandung</p>
+                <div class="recommendation-meta">
+                  <strong>1.5 km</strong>
+                  <span>Kuota Penuh</span>
+                </div>
+                <div class="recommendation-foot">
+                  <span>Zona Perbatasan</span>
+                  <a href="#" data-page="map">Lihat Detail</a>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="zonasi-result-step" class="hidden zonasi-result-stage">
+        <div class="map-page-shell">
+          <aside class="workspace-panel map-panel-public" id="zonasi-filter-box">
+            <div class="fp-loc-badge">
+              <div>
+                <span class="fp-loc-label">Lokasi aktif</span>
+                <span class="fp-loc-val" id="zonasi-active-loc">-</span>
+              </div>
+              <div class="fp-loc-acts">
+                <span class="rad-badge" id="zonasi-radius-badge">Radius: 5 km</span>
+                <button class="btn-sm-outline" id="btn-change-loc">Ubah</button>
+              </div>
+            </div>
+
+            <div class="workspace-filters fp-filters">
+              <div class="fg2">
+                <label for="zon-kat">Kategori</label>
+                <select class="fi" id="zon-kat">
+                  <option value="">Semua</option>
+                  <option value="SD">SD</option>
+                  <option value="SMP">SMP</option>
+                  <option value="SMA">SMA</option>
+                  <option value="SMK">SMK</option>
+                </select>
+              </div>
+              <div class="fg2">
+                <label for="zon-kecamatan-zonasi">Outline Zonasi</label>
+                <select class="fi" id="zon-kecamatan-zonasi">
+                  <option value="">Pilih Kecamatan</option>
+                </select>
+              </div>
+              <div class="fg2 zonasi-outline-note" id="zon-zonasi-status">Pilih kecamatan untuk menampilkan batas zonasi.</div>
+              <div class="fg2 fg2-btns">
+                <button class="btn-sm-outline" id="zon-clear">Reset</button>
+                <button class="btn-sm-fill" id="zon-apply">Filter</button>
+              </div>
+            </div>
+
+            <div class="workspace-list fp-list">
+              <div class="card-head compact">
+                <div>
+                  <p class="card-kicker">Hasil radius</p>
+                  <h3>Hasil zonasi</h3>
+                </div>
+                <div class="legend-mini">
+                  <span class="ld g"></span> Dalam
+                  <span class="ld y"></span> Dekat
+                  <span class="ld r"></span> Luar
+                </div>
+              </div>
+              <ul class="school-list" id="zon-list"></ul>
+              <div class="fp-pg">
+                <button class="pg-btn" id="zon-prev">Prev</button>
+                <span id="zon-page-info">Page 1 of 1</span>
+                <button class="pg-btn" id="zon-next">Next</button>
+              </div>
+            </div>
+          </aside>
+
+          <div class="map-canvas">
+            <div id="zonasi-view" class="fullmap"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-about" class="page page-scroll">
+      <div class="public-page">
+        <section class="about-hero">
+          <div class="about-hero-glass">
+            <h2>Mewujudkan Transparansi Penerimaan Peserta Didik Baru</h2>
+            <p>Sistem Informasi Geografis (SIG) Zonasi Jabar hadir untuk memberikan kejelasan, keadilan, dan kemudahan dalam memetakan zona sekolah bagi seluruh lapisan masyarakat di Jawa Barat.</p>
+          </div>
+        </section>
+
+        <section class="about-grid">
+          <article class="about-card">
+            <h3>Tujuan Platform</h3>
+            <p>Menghilangkan kebingungan terkait batas zonasi sekolah dengan memvisualisasikan data spasial secara akurat. Platform ini membantu masyarakat memahami jarak, lokasi sekolah, dan gambaran peluang pendaftaran dengan lebih jelas.</p>
+          </article>
+
+          <article class="about-card dark">
+            <h3>Masalah yang Diselesaikan</h3>
+            <ul class="about-list">
+              <li>Ketidakjelasan batas jarak dan wilayah layanan sekolah.</li>
+              <li>Kesalahan manual dalam menghitung jarak rumah ke sekolah.</li>
+              <li>Kurangnya informasi kuota yang mudah dipahami masyarakat.</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="section-shell soft-panel">
+          <div class="section-heading center">
+            <h3>Teknologi Dibalik Sistem</h3>
+            <p>Infrastruktur digital yang dirancang untuk menjaga akurasi lokasi, kejelasan visual, dan kemudahan penggunaan.</p>
+          </div>
+
+          <div class="tech-grid">
+            <article class="tech-card">
+              <div class="feature-icon blue"></div>
+              <h4>WebGIS</h4>
+              <p>Visualisasi poligon zonasi, titik sekolah, dan peta interaktif berbasis web yang bisa diakses langsung dari browser.</p>
+            </article>
+
+            <article class="tech-card">
+              <div class="feature-icon green"></div>
+              <h4>Geolokasi & GPS</h4>
+              <p>Pemanfaatan API geolokasi untuk menentukan posisi pengguna secara presisi saat proses pengecekan sekolah terdekat.</p>
+            </article>
+
+            <article class="tech-card">
+              <div class="feature-icon peach"></div>
+              <h4>Kalkulasi Jarak</h4>
+              <p>Pengukuran berbasis koordinat untuk membantu validasi domisili dan menampilkan estimasi jarak yang konsisten.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="privacy-panel">
+          <div class="privacy-visual"></div>
+          <div class="privacy-copy">
+            <span class="privacy-badge">Kebijakan Privasi Data</span>
+            <h3>Keamanan Data Lokasi Anda Adalah Prioritas</h3>
+            <p>Sistem ini menggunakan data koordinat geolokasi hanya untuk keperluan perhitungan dan verifikasi jarak. Data publik tidak menampilkan titik rumah pengguna secara detail.</p>
+            <ul class="about-list">
+              <li>Data lokasi tidak disebarluaskan kepada pihak ketiga.</li>
+              <li>Tampilan publik hanya menampilkan hasil dan estimasi yang relevan.</li>
+              <li>Sistem dirancang agar sejalan dengan prinsip perlindungan data pribadi.</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="page-login" class="page auth-page">
+      <div class="auth-shell">
+        <div class="auth-side">
+          <p class="eyebrow">Akses aplikasi</p>
+          <h2>Masuk untuk membuka dashboard admin dan operator.</h2>
+          <p>Semua alur lama tetap tersedia, tetapi sekarang hadir dalam tampilan yang lebih bersih dan lebih mudah diikuti.</p>
+        </div>
+        <div class="auth-card">
+          <h2>Login</h2>
+          <form id="login-form">
+            <div class="fg">
+              <label for="login-email">Email</label>
+              <input type="email" id="login-email" class="fi" required/>
+            </div>
+            <div class="fg">
+              <label for="login-pass">Password</label>
+              <div class="pass-wrap">
+                <input type="password" id="login-pass" class="fi" required/>
+                <button type="button" class="eye-btn" data-target="login-pass">Lihat</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-glow full-w">Masuk</button>
+            <p class="auth-alt">Belum punya akun? <a href="#" data-page="register" class="auth-link">Daftar sekarang</a></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-register" class="page auth-page">
+      <div class="auth-shell">
+        <div class="auth-side auth-side-alt">
+          <p class="eyebrow">Buat akun</p>
+          <h2>Daftar sebagai pengguna umum, operator sekolah, atau admin dinas.</h2>
+          <p>Form lama tetap kompatibel dengan backend dan role-based flow yang sudah ada.</p>
+        </div>
+        <div class="auth-card">
+          <h2>Register</h2>
+          <form id="register-form">
+            <div class="fg">
+              <label for="reg-user">Username</label>
+              <input type="text" id="reg-user" class="fi" required/>
+            </div>
+            <div class="fg">
+              <label for="reg-email">Email</label>
+              <input type="email" id="reg-email" class="fi" required/>
+            </div>
+            <div class="fg">
+              <label for="reg-pass">Password</label>
+              <div class="pass-wrap">
+                <input type="password" id="reg-pass" class="fi" required/>
+                <button type="button" class="eye-btn" data-target="reg-pass">Lihat</button>
+              </div>
+            </div>
+            <div class="fg">
+              <label for="reg-role">Daftar sebagai</label>
+              <select id="reg-role" class="fi" required>
+                <option value="user">Pengguna umum</option>
+                <option value="sekolah">Operator sekolah</option>
+                <option value="admin">Admin dinas</option>
+              </select>
+            </div>
+            <div id="extra-admin" class="fg hidden">
+              <label for="reg-admin-code">Kode admin</label>
+              <input type="text" id="reg-admin-code" class="fi" placeholder="Masukkan kode admin"/>
+            </div>
+            <div id="extra-operator" class="fg hidden">
+              <label for="reg-op-code">Kode operator</label>
+              <input type="text" id="reg-op-code" class="fi" placeholder="Masukkan kode operator"/>
+              <label for="reg-school-id" class="mt8">NPSN</label>
+              <input type="text" id="reg-school-id" class="fi" placeholder="Masukkan NPSN sekolah"/>
+            </div>
+            <button type="submit" class="btn-glow full-w">Buat akun</button>
+            <p class="auth-alt">Sudah punya akun? <a href="#" data-page="login" class="auth-link">Masuk di sini</a></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-profile" class="page page-scroll profile-page">
+      <div class="profile-card">
+        <p class="card-kicker">Profil pengguna</p>
+        <h2>Akun aktif</h2>
+        <div class="profile-grid">
+          <div class="pr">
+            <span class="pr-l">Username</span>
+            <span class="pr-v" id="profile-username">User</span>
+          </div>
+          <div class="pr">
+            <span class="pr-l">Email</span>
+            <span class="pr-v" id="profile-email">user@mail.com</span>
+          </div>
+          <div class="pr">
+            <span class="pr-l">Role</span>
+            <span class="pr-v" id="profile-role">user</span>
+          </div>
+          <div class="pr">
+            <span class="pr-l">Password</span>
+            <div>
+              <span class="pr-v" id="prof-pass">••••••••••</span>
+              <button id="btn-lihat-pass" class="btn-link">Lihat</button>
+            </div>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-sm-outline full-w" data-page="landing">Kembali ke Home</button>
+          <button class="btn-danger full-w keluar-link" data-page="login">Keluar akun</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-admin" class="page dash-page">
+      <aside class="dash-side">
+        <div>
+          <p class="card-kicker">Dashboard</p>
+          <h2>Admin</h2>
+        </div>
+        <div class="dash-user">
+          <strong id="admin-user-name">Admin</strong>
+          <span>Pengelolaan data PPDB</span>
+        </div>
+        <nav class="dash-nav">
+          <button class="dash-nav-btn active" data-panel="sekolah">Data Sekolah</button>
+          <button class="dash-nav-btn" data-panel="zonasi-data">Data Zonasi</button>
+          <button class="dash-nav-btn" data-panel="pengguna">Pengguna</button>
+        </nav>
+        <div class="dash-foot">
+          <button id="admin-back-home" class="btn-link">Kembali</button>
+          <button id="admin-logout-btn" class="btn-link btn-link-red">Keluar</button>
+        </div>
+      </aside>
+
+      <div class="dash-main">
+        <div class="dash-panel active" id="admin-panel-sekolah">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Panel sekolah</p>
+              <h2>Data sekolah</h2>
+            </div>
+            <div class="dp-acts">
+              <input type="search" id="admin-search-sekolah" class="fi fi-sm" placeholder="Cari data"/>
+              <select id="admin-filter-kat" class="fi fi-sm">
+                <option value="">Semua</option>
+                <option value="SD">SD</option>
+                <option value="SMP">SMP</option>
+                <option value="SMA">SMA</option>
+                <option value="SMK">SMK</option>
+              </select>
+              <select id="admin-filter-status" class="fi fi-sm">
+                <option value="">Semua</option>
+                <option value="N">Negeri</option>
+                <option value="S">Swasta</option>
+              </select>
+              <button id="admin-btn-tambah" class="btn-sm-fill">Tambah</button>
+            </div>
+          </div>
+          <div class="dp-table">
+            <table class="dtable" id="admin-tbl-sekolah">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Jenjang</th>
+                  <th>Status</th>
+                  <th>Akreditasi</th>
+                  <th>Kecamatan</th>
+                  <th>Kuota</th>
+                  <th>Pendaftar</th>
+                  <th>Sisa</th>
+                  <th>Biaya</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tbody-sekolah">
+                <tr><td colspan="11">Memuat...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="dp-pg">
+            <button id="admin-prev" class="pg-btn">Prev</button>
+            <span id="admin-page-info">Page 1</span>
+            <button id="admin-next" class="pg-btn">Next</button>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="admin-panel-zonasi-data">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Panel zonasi</p>
+              <h2>Data zonasi</h2>
+            </div>
+            <button id="admin-btn-tambah-zonasi" class="btn-sm-fill">Tambah zonasi</button>
+          </div>
+          <div class="dp-table">
+            <table class="dtable">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Jenjang</th>
+                  <th>Radius</th>
+                  <th>Wilayah</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tbody-zonasi">
+                <tr><td colspan="6">Belum ada data</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="admin-panel-pengguna">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Panel pengguna</p>
+              <h2>Daftar pengguna</h2>
+            </div>
+          </div>
+          <div class="dp-table">
+            <table class="dtable">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="admin-tbody-pengguna">
+                <tr><td colspan="6">Belum ada data</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-operator" class="page dash-page">
+      <aside class="dash-side">
+        <div>
+          <p class="card-kicker">Dashboard</p>
+          <h2>Operator</h2>
+        </div>
+        <div class="dash-user">
+          <strong id="op-user-name">Operator</strong>
+          <span id="op-school-label">Sekolah</span>
+        </div>
+        <nav class="dash-nav">
+          <button class="dash-nav-btn active" data-op-panel="profil">Profil</button>
+          <button class="dash-nav-btn" data-op-panel="kuota">Kuota</button>
+          <button class="dash-nav-btn" data-op-panel="biaya">Biaya</button>
+          <button class="dash-nav-btn" data-op-panel="fasilitas">Fasilitas</button>
+        </nav>
+        <div class="dash-foot">
+          <button id="op-back-home" class="btn-link">Kembali</button>
+          <button id="op-logout-btn" class="btn-link btn-link-red">Keluar</button>
+        </div>
+      </aside>
+
+      <div class="dash-main">
+        <div class="dash-panel active" id="op-panel-profil">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Profil sekolah</p>
+              <h2>Informasi sekolah</h2>
+            </div>
+            <button id="op-btn-edit-profil" class="btn-sm-outline">Edit profil</button>
+          </div>
+          <div class="op-profil-card">
+            <h3 id="op-school-name">Nama Sekolah</h3>
+            <p>Status: <span id="op-school-status">-</span></p>
+            <p>Jenjang: <span id="op-school-jenjang">-</span></p>
+            <p>Akreditasi: <span id="op-school-akred">-</span></p>
+            <p>Kecamatan: <span id="op-school-kec">-</span></p>
+            <p>Kab/Kota: <span id="op-school-kab">-</span></p>
+            <p>Alamat: <span id="op-school-alamat">-</span></p>
+            <div class="op-stat-row">
+              <div>Kuota</div>
+              <div id="op-stat-kuota">-</div>
+            </div>
+            <div class="op-stat-row">
+              <div>Pendaftar</div>
+              <div id="op-stat-pendaftar">-</div>
+            </div>
+            <div class="op-stat-row">
+              <div>Sisa</div>
+              <div id="op-stat-sisa">-</div>
+            </div>
+            <div class="op-stat-row" id="op-stat-persen-card">
+              <div>Persentase</div>
+              <div id="op-stat-persen">-</div>
+            </div>
+            <div class="op-progress">
+              <div id="op-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="op-panel-kuota">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Rombel</p>
+              <h2>Kuota dan pendaftar</h2>
+            </div>
+            <button id="op-btn-tambah-rombel" class="btn-sm-fill">Tambah rombel</button>
+          </div>
+          <div class="dp-table">
+            <table class="dtable">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Rombel</th>
+                  <th>Kuota</th>
+                  <th>Pendaftar</th>
+                  <th>Sisa</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="op-tbody-kuota"></tbody>
+            </table>
+          </div>
+          <span id="op-kuota-summary" class="summary-text"></span>
+        </div>
+
+        <div class="dash-panel" id="op-panel-biaya">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Biaya sekolah</p>
+              <h2>Komponen biaya</h2>
+            </div>
+            <button id="op-btn-edit-biaya" class="btn-sm-outline">Edit biaya</button>
+          </div>
+          <div class="op-biaya">
+            <p>Gedung: <b id="ob-gedung">-</b></p>
+            <p>Seragam: <b id="ob-seragam">-</b></p>
+            <p>Buku: <b id="ob-buku">-</b></p>
+            <p>Total masuk: <b id="ob-total-masuk">-</b></p>
+            <hr/>
+            <p>SPP: <b id="ob-spp">-</b></p>
+            <p>Komite: <b id="ob-komite">-</b></p>
+            <p>Total rutin: <b id="ob-total-rutin">-</b></p>
+            <p>Catatan: <span id="ob-catatan">-</span></p>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="op-panel-fasilitas">
+          <div class="dp-top">
+            <div>
+              <p class="card-kicker">Fasilitas</p>
+              <h2>Sarana sekolah</h2>
+            </div>
+            <button id="op-btn-tambah-fasilitas" class="btn-sm-fill">Tambah fasilitas</button>
+          </div>
+          <div class="dp-table">
+            <table class="dtable">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Jumlah</th>
+                  <th>Kondisi</th>
+                  <th>Keterangan</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="op-tbody-fasilitas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="bnav-btn active" data-page="landing">Home</button>
+    <button class="bnav-btn requires-login-nav" data-page="main">Utama</button>
+    <button class="bnav-btn requires-login-nav" data-page="map">Peta</button>
+    <button class="bnav-btn requires-login-nav" data-page="zonasi">Zonasi</button>
+  </nav>
+</div>
+
+<div class="modal-overlay hidden" id="modal-sekolah">
+  <div class="modal-box">
+    <div class="mb-head">
+      <h3 id="modal-sekolah-title">Form sekolah</h3>
+      <button id="modal-sekolah-close" class="mb-x">x</button>
+    </div>
+    <div class="mb-body">
+      <div class="fg"><label for="mf-npsn">NPSN</label><input type="text" id="mf-npsn" class="fi"/></div>
+      <div class="fg"><label for="mf-nama">Nama sekolah</label><input type="text" id="mf-nama" class="fi"/></div>
+      <div class="row2">
+        <div class="fg">
+          <label for="mf-jenjang">Jenjang</label>
+          <select id="mf-jenjang" class="fi"><option value="">-</option><option>SD</option><option>SMP</option><option>SMA</option><option>SMK</option></select>
+        </div>
+        <div class="fg">
+          <label for="mf-status">Status</label>
+          <select id="mf-status" class="fi"><option value="N">Negeri</option><option value="S">Swasta</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="fg">
+          <label for="mf-akreditasi">Akreditasi</label>
+          <select id="mf-akreditasi" class="fi"><option value="-">-</option><option>A</option><option>B</option><option>C</option></select>
+        </div>
+        <div class="fg"><label for="mf-kecamatan">Kecamatan</label><input type="text" id="mf-kecamatan" class="fi"/></div>
+      </div>
+      <div class="fg"><label for="mf-kabkota">Kab/Kota</label><input type="text" id="mf-kabkota" class="fi"/></div>
+      <div class="fg"><label for="mf-alamat">Alamat</label><input type="text" id="mf-alamat" class="fi"/></div>
+      <div class="row2">
+        <div class="fg"><label for="mf-lat">Latitude</label><input type="text" id="mf-lat" class="fi"/></div>
+        <div class="fg"><label for="mf-lng">Longitude</label><input type="text" id="mf-lng" class="fi"/></div>
+      </div>
+      <div class="row2">
+        <div class="fg"><label for="mf-kuota">Kuota</label><input type="number" id="mf-kuota" class="fi"/></div>
+        <div class="fg"><label for="mf-pendaftar">Pendaftar</label><input type="number" id="mf-pendaftar" class="fi"/></div>
+      </div>
+      <div class="row2">
+        <div class="fg"><label for="mf-biaya">Biaya</label><input type="number" id="mf-biaya" class="fi"/></div>
+        <div class="fg"><label for="mf-spp">SPP</label><input type="number" id="mf-spp" class="fi"/></div>
+      </div>
+    </div>
+    <div class="mb-foot">
+      <button id="modal-sekolah-batal" class="btn-sm-outline">Batal</button>
+      <button id="modal-sekolah-simpan" class="btn-sm-fill">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-hapus">
+  <div class="modal-box modal-sm">
+    <div class="mb-head">
+      <h3>Hapus data</h3>
+      <button id="modal-hapus-close" class="mb-x">x</button>
+    </div>
+    <div class="mb-body">
+      <p>Apakah data <b id="hapus-nama-target"></b> akan dihapus?</p>
+    </div>
+    <div class="mb-foot">
+      <button id="modal-hapus-batal" class="btn-sm-outline">Batal</button>
+      <button id="modal-hapus-ok" class="btn-sm-danger">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-rombel">
+  <div class="modal-box modal-sm">
+    <div class="mb-head">
+      <h3 id="modal-rombel-title">Rombel</h3>
+      <button id="modal-rombel-close" class="mb-x">x</button>
+    </div>
+    <div class="mb-body">
+      <div class="fg"><label for="mr-kelas">Nama kelas</label><input type="text" id="mr-kelas" class="fi"/></div>
+      <div class="row2">
+        <div class="fg"><label for="mr-kuota">Kuota</label><input type="number" id="mr-kuota" class="fi"/></div>
+        <div class="fg"><label for="mr-pendaftar">Pendaftar</label><input type="number" id="mr-pendaftar" class="fi"/></div>
+      </div>
+    </div>
+    <div class="mb-foot">
+      <button id="modal-rombel-batal" class="btn-sm-outline">Batal</button>
+      <button id="modal-rombel-simpan" class="btn-sm-fill">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-biaya">
+  <div class="modal-box modal-sm">
+    <div class="mb-head">
+      <h3>Edit biaya</h3>
+      <button id="modal-biaya-close" class="mb-x">x</button>
+    </div>
+    <div class="mb-body">
+      <div class="row2">
+        <div class="fg"><label for="mb-gedung">Gedung</label><input type="number" id="mb-gedung" class="fi"/></div>
+        <div class="fg"><label for="mb-seragam">Seragam</label><input type="number" id="mb-seragam" class="fi"/></div>
+      </div>
+      <div class="row2">
+        <div class="fg"><label for="mb-buku">Buku</label><input type="number" id="mb-buku" class="fi"/></div>
+        <div class="fg"><label for="mb-spp">SPP</label><input type="number" id="mb-spp" class="fi"/></div>
+      </div>
+      <div class="fg"><label for="mb-komite">Komite</label><input type="number" id="mb-komite" class="fi"/></div>
+      <div class="fg"><label for="mb-catatan">Catatan</label><input type="text" id="mb-catatan" class="fi"/></div>
+    </div>
+    <div class="mb-foot">
+      <button id="modal-biaya-batal" class="btn-sm-outline">Batal</button>
+      <button id="modal-biaya-simpan" class="btn-sm-fill">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-fasilitas">
+  <div class="modal-box modal-sm">
+    <div class="mb-head">
+      <h3 id="modal-fasilitas-title">Fasilitas</h3>
+      <button id="modal-fasilitas-close" class="mb-x">x</button>
+    </div>
+    <div class="mb-body">
+      <div class="fg"><label for="mfas-nama">Nama fasilitas</label><input type="text" id="mfas-nama" class="fi"/></div>
+      <div class="row2">
+        <div class="fg"><label for="mfas-jumlah">Jumlah</label><input type="number" id="mfas-jumlah" class="fi" value="1"/></div>
+        <div class="fg">
+          <label for="mfas-kondisi">Kondisi</label>
+          <select id="mfas-kondisi" class="fi"><option>Baik</option><option>Cukup</option><option>Rusak</option></select>
+        </div>
+      </div>
+      <div class="fg"><label for="mfas-ket">Keterangan</label><input type="text" id="mfas-ket" class="fi"/></div>
+    </div>
+    <div class="mb-foot">
+      <button id="modal-fasilitas-batal" class="btn-sm-outline">Batal</button>
+      <button id="modal-fasilitas-simpan" class="btn-sm-fill">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-school-detail">
+  <div class="modal-box school-detail-modal">
+    <div class="mb-head">
+      <h3>Detail Sekolah</h3>
+      <button id="modal-school-detail-close" class="mb-x">x</button>
+    </div>
+    <div class="mb-body school-detail-body">
+      <div class="school-detail-top">
+        <h3 id="school-detail-name">Nama Sekolah</h3>
+        <div class="school-detail-badges">
+          <span id="school-detail-jenjang" class="item-jenjang-badge">Jenjang</span>
+          <span id="school-detail-status" class="preview-badge">Status</span>
+        </div>
+      </div>
+      <div class="school-detail-grid">
+        <div class="school-detail-row"><span>Jarak</span><strong id="school-detail-distance">-</strong></div>
+        <div class="school-detail-row"><span>Kecamatan</span><strong id="school-detail-kecamatan">-</strong></div>
+        <div class="school-detail-row"><span>NPSN</span><strong id="school-detail-npsn">-</strong></div>
+        <div class="school-detail-row"><span>Akreditasi</span><strong id="school-detail-akreditasi">-</strong></div>
+        <div class="school-detail-row"><span>Kuota</span><strong id="school-detail-kuota">0</strong></div>
+        <div class="school-detail-row"><span>Pendaftar</span><strong id="school-detail-pendaftar">0</strong></div>
+        <div class="school-detail-row"><span>Sisa</span><strong id="school-detail-sisa">0</strong></div>
+        <div class="school-detail-row"><span>Koordinat</span><strong id="school-detail-latlng">-</strong></div>
+      </div>
+      <div class="school-detail-address">
+        <span>Alamat</span>
+        <p id="school-detail-address">-</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+ALTER TABLE sekolah
+ADD COLUMN IF NOT EXISTS biaya INTEGER;
+
+UPDATE sekolah
+SET biaya = 0
+WHERE biaya IS NULL;
