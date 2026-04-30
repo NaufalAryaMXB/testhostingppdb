@@ -89,11 +89,17 @@ export function paginate(arr, page, perPage = 5) {
 
 /** Deteksi jenjang dari nama sekolah */
 export function detectJenjang(nama = '') {
-  const n = nama.toUpperCase();
-  if (/SMK|SMKN/.test(n))                      return 'smk';
-  if (/SMA|SMAN|MA|MADRASAH ALIYAH/.test(n))  return 'sma';
-  if (/SMP|SMPN|MTS|TSANAWIYAH/.test(n))      return 'smp';
-  if (/SD|SDN|MI|MADRASAH IBTIDAIYAH/.test(n)) return 'sd';
+  const n = (nama || '').toUpperCase();
+  if (n.includes('SMK'))   return 'smk';
+  if (n.includes('SMA') || n.includes('SMAN') || n.includes('MA ') || n.startsWith('MA ') || n.includes('MAS ') || n.startsWith('MAS ')) return 'sma';
+  if (n.includes('SMP') || n.includes('MTS') || n.includes('TSANAWIYAH')) return 'smp';
+  if (n.includes('SD')  || n.includes('MI ') || n.startsWith('MI ') || n.includes('MADRASAH IBTIDAIYAH')) return 'sd';
+  
+  // Fallback regex for more complex cases
+  if (/\b(SMA|SMAN|MA|MAS)\b/.test(n)) return 'sma';
+  if (/\b(SMP|SMPN|MTS)\b/.test(n)) return 'smp';
+  if (/\b(SD|SDN|MI)\b/.test(n)) return 'sd';
+
   return 'other';
 }
 
