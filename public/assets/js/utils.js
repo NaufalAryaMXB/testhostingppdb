@@ -96,6 +96,7 @@ export function paginate(arr, page, perPage = 5) {
 /** Deteksi jenjang dari nama sekolah */
 export function detectJenjang(nama = '') {
   const n = (nama || '').toUpperCase();
+  if (/\b(KB|TK|PAUD|RA|SPS|TPA)\b/.test(n) || n.includes('TAMAN KANAK')) return 'kb';
   if (n.includes('SMK'))   return 'smk';
   if (n.includes('SMA') || n.includes('SMAN') || n.includes('MA ') || n.startsWith('MA ') || n.includes('MAS ') || n.startsWith('MAS ')) return 'sma';
   if (n.includes('SMP') || n.includes('MTS') || n.includes('TSANAWIYAH')) return 'smp';
@@ -111,6 +112,7 @@ export function detectJenjang(nama = '') {
 
 /** Konfigurasi warna & label tiap jenjang */
 export const JENJANG_CFG = {
+  kb:    { color: '#546e7a', label: 'KB / TK',   dot: '⚫' },
   sd:    { color: '#1565C0', label: 'SD / MI',   dot: '🔵' },
   smp:   { color: '#2e7d32', label: 'SMP / MTs', dot: '🟢' },
   sma:   { color: '#c62828', label: 'SMA / MA',  dot: '🔴' },

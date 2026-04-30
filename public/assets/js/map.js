@@ -78,7 +78,7 @@ function makeUserIcon() {
    POPUP HTML
 ══════════════════════════════════════════════════════ */
 function makePopup(school, distance, radius) {
-  const jenjang = detectJenjang(school.nama);
+  const jenjang = detectJenjang(school.jenjang || school.nama);
   const cfg     = J[jenjang] || J.other;
   const zona    = distance !== null ? classifyDistance(distance, radius) : null;
 
@@ -110,6 +110,7 @@ function addLegend(mapInst, withZona = false) {
     L.DomEvent.disableScrollPropagation(el);
 
     const jRows = [
+      ['kb',  J.kb],
       ['sd',  J.sd],
       ['smp', J.smp],
       ['sma', J.sma],
@@ -327,7 +328,7 @@ export function renderMapMarkers(schools) {
   Object.keys(_mapMarkers).forEach(k => delete _mapMarkers[k]);
 
   schools.forEach(school => {
-    const jenjang = detectJenjang(school.nama);
+    const jenjang = detectJenjang(school.jenjang || school.nama);
     const marker  = L.marker([school.lat, school.lng], {
       icon:  makeSchoolIcon(jenjang, null),
       title: school.nama,
@@ -481,7 +482,7 @@ export function renderZonasiMarkers(schools) {
       ? haversineDistance(userLoc.lat, userLoc.lng, school.lat, school.lng)
       : null;
     const zona    = dist !== null ? classifyDistance(dist, radius) : null;
-    const jenjang = detectJenjang(school.nama);
+    const jenjang = detectJenjang(school.jenjang || school.nama);
 
     const marker = L.marker([school.lat, school.lng], {
       icon:  makeSchoolIcon(jenjang, zona),

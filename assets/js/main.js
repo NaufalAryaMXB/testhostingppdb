@@ -21,7 +21,7 @@ import {
   getSchools, setSchools, getUserLocation, setUserLocation,
   getRadius, setRadius,
 } from './state.js';
-import { filterSchools, paginate, debounce, sortByDistance, haversineDistance } from './utils.js';
+import { filterSchools, paginate, debounce, sortByDistance, haversineDistance, detectJenjang } from './utils.js';
 
 // ── Pagination state ──
 let _homePageNum   = 1;
@@ -1083,6 +1083,7 @@ function fRupiah(n) {
 /** Jenjang pill CSS class dari nama sekolah */
 function jenjangCls(nama = '') {
   const n = nama.toUpperCase();
+  if (/\b(KB|TK|PAUD|RA|SPS|TPA)\b/.test(n)) return 'jenjang-kb';
   if (/SMK/.test(n)) return 'jenjang-smk';
   if (/SMA|SMAN|MA\b/.test(n)) return 'jenjang-sma';
   if (/SMP|SMPN|MTS/.test(n)) return 'jenjang-smp';
@@ -1186,7 +1187,8 @@ function getAdminFiltered() {
     const kec  = (s.kecamatan || '').toLowerCase();
     const q    = _adminSearch.toLowerCase();
     const okQ  = !q || nama.includes(q) || kec.includes(q);
-    const okK  = !_adminFilterKat || nama.toUpperCase().startsWith(_adminFilterKat);
+    const jenjang = (s.jenjang || detectJenjang(s.nama)).toUpperCase();
+    const okK  = !_adminFilterKat || jenjang.includes(_adminFilterKat);
     const okS  = !_adminFilterStat || s.status === _adminFilterStat;
     return okQ && okK && okS;
   });
@@ -1208,8 +1210,9 @@ function renderAdminTable() {
     tbody.innerHTML = slice.map((s, i) => {
       const no     = (_adminPage - 1) * PER + i + 1;
       const nama   = s.nama || '—';
-      const jCls   = jenjangCls(nama);
-      const jLabel = nama.match(/^(SD|SDN|MI|SMP|SMPN|MTS|SMA|SMAN|MA|SMK|SMKN)/i)?.[0] || '—';
+      const jRaw   = s.jenjang || nama.match(/^(KB|TK|PAUD|RA|SPS|TPA|SD|SDN|MI|SMP|SMPN|MTS|SMA|SMAN|MA|SMK|SMKN)/i)?.[0] || '—';
+      const jCls   = jenjangCls(jRaw || nama);
+      const jLabel = jRaw;
       const stTxt  = s.status === 'N' ? 'Negeri' : s.status === 'S' ? 'Swasta' : s.status || '—';
       const stColor= s.status === 'N' ? '#1565C0' : '#e65100';
       const sisa   = typeof s.kuota === 'number' && typeof s.pendaftar === 'number'
@@ -1278,9 +1281,10 @@ function fillModalSekolah(s) {
   set('mf-npsn', s.npsn || '');
   set('mf-nama', s.nama || '');
   // jenjang: deteksi dari nama
-  const n = (s.nama || '').toUpperCase();
+  const n = (s.jenjang || s.nama || '').toUpperCase();
   let j = '';
-  if (/SMK/.test(n)) j = 'SMK'; else if (/SMA|SMAN/.test(n)) j = 'SMA';
+  if (/\b(KB|TK|PAUD|RA|SPS|TPA)\b/.test(n)) j = 'KB';
+  else if (/SMK/.test(n)) j = 'SMK'; else if (/SMA|SMAN/.test(n)) j = 'SMA';
   else if (/SMP|SMPN/.test(n)) j = 'SMP'; else if (/SD|SDN/.test(n)) j = 'SD';
   set('mf-jenjang', j);
   set('mf-status', s.status || 'N');
@@ -1429,7 +1433,7 @@ function renderOpProfil() {
   set('op-school-alamat', s.alamat    || '—');
 
   const jEl = document.getElementById('op-school-jenjang');
-  if (jEl) { const n = s.nama || ''; const lbl = n.match(/^(SD|SDN|MI|SMP|SMPN|MTS|SMA|SMAN|MA|SMK|SMKN)/i)?.[0] || '—'; jEl.textContent = lbl; jEl.className = 'jenjang-pill ' + jenjangCls(n); }
+  if (jEl) { const n = s.jenjang || s.nama || ''; const lbl = s.jenjang || n.match(/^(KB|TK|PAUD|RA|SPS|TPA|SD|SDN|MI|SMP|SMPN|MTS|SMA|SMAN|MA|SMK|SMKN)/i)?.[0] || '—'; jEl.textContent = lbl; jEl.className = 'jenjang-pill ' + jenjangCls(n); }
 
   const stEl = document.getElementById('op-school-status');
   if (stEl) { stEl.textContent = s.status === 'N' ? 'Negeri' : 'Swasta'; stEl.className = 'status-pill status-aktif'; }

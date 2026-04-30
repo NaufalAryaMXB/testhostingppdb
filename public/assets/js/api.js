@@ -15,6 +15,7 @@ function normalize(raw) {
     id:         raw.sekolah_id ?? Math.random(),
     nama:       raw.nama_sekolah ?? 'Tanpa Nama',
     npsn:       raw.npsn ?? '-',
+    jenjang:    raw.jenjang ?? '',
     kecamatan:  raw.kecamatan ?? '',
     lat:        parseFloat(raw.latitude ?? 0),
     lng:        parseFloat(raw.longitude ?? 0),

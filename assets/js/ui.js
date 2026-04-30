@@ -49,7 +49,7 @@ function renderSchoolDetail(school, distance = null) {
   const kuota = Number(school.kuota || 0);
   const pendaftar = Number(school.pendaftar || 0);
   const sisa = Math.max(kuota - pendaftar, 0);
-  const jenjang = detectJenjang(school.nama);
+  const jenjang = detectJenjang(school.jenjang || school.nama);
   const cfg = JENJANG_CFG[jenjang] || JENJANG_CFG.other;
 
   const setText = (id, value) => {
@@ -127,7 +127,7 @@ export function renderHomeTable(items, page, total) {
         <article class="school-preview-card">
           <div class="preview-top">
             <span class="preview-badge">${badge}</span>
-            <span>${detectJenjang(s.nama)}</span>
+            <span>${s.jenjang || detectJenjang(s.nama)}</span>
           </div>
           <div>
             <h4>${s.nama}</h4>
@@ -165,7 +165,7 @@ export function renderFlatList(listId, pageInfoId, prevId, nextId, items, page, 
       const color = dist !== null ? classifyDistance(dist, radius) : 'default';
       const dotClass = color === 'default' ? '' : `dot-${color}`;
 
-      const jenjang = detectJenjang(school.nama);
+      const jenjang = detectJenjang(school.jenjang || school.nama);
       const jCfg    = JENJANG_CFG[jenjang] || JENJANG_CFG.other;
 
       const sisaKuota = school.kuota - school.pendaftar;
