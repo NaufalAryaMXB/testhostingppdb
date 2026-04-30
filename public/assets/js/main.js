@@ -487,6 +487,24 @@ function setKecamatanOptionsFromZonasi(zonasiRows) {
     .map(name => ({ value: name, label: name }));
 }
 
+function setKecamatanOptionsFromSchools(schools) {
+  const unique = [...new Set(
+    (Array.isArray(schools) ? schools : [])
+      .map(school => (school?.kecamatan || '').trim())
+      .filter(Boolean)
+      .map(name => name
+        .replace(/^kecamatan\s+/i, '')
+        .replace(/^kec\.?\s*/i, '')
+        .trim()
+      )
+      .filter(Boolean)
+  )];
+
+  _zonasiKecamatanOptions = unique
+    .sort((a, b) => a.localeCompare(b, 'id'))
+    .map(name => ({ value: name, label: name }));
+}
+
 function populateKecamatanSelect(selectId) {
   const select = document.getElementById(selectId);
   if (!select) return;
@@ -777,8 +795,15 @@ async function boot() {
   try {
     const { data, fromFallback } = await fetchSekolah();
     setSchools(data);
-    const zonasiRows = await fetchZonasiList();
-    setKecamatanOptionsFromZonasi(zonasiRows);
+    setKecamatanOptionsFromSchools(data);
+
+    try {
+      const zonasiRows = await fetchZonasiList();
+      setKecamatanOptionsFromZonasi(zonasiRows);
+    } catch (zonasiErr) {
+      console.warn('[main] zonasi list unavailable, using school districts:', zonasiErr);
+    }
+
     populateKecamatanSelect('map-kecamatan-zonasi');
     populateKecamatanSelect('zon-kecamatan-zonasi');
     renderHomePage();
