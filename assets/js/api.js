@@ -46,11 +46,18 @@ const FALLBACK = [
   { id:15, nama:'SDN Cibeunying',     kecamatan:'Cibeunying',   lat:-6.9023, lng:107.6289, akreditasi:'C', pendaftar:155, kuota:300, biaya:1050000, spp:200000, alamat:'Jl. Cibeunying...' },
 ];
 
-export async function fetchSekolah() {
+export async function fetchSekolah(filters = {}) {
   try {
+    const params = new URLSearchParams();
+    if (filters.kat) params.set('jenjang', filters.kat);
+    if (filters.kecamatan) params.set('kecamatan', filters.kecamatan);
+    if (filters.nama) params.set('nama', filters.nama);
+
+    const url = params.toString() ? `${API_URL}?${params.toString()}` : API_URL;
+
     const ctrl = new AbortController();
     const tid  = setTimeout(() => ctrl.abort(), 30000);
-    const res  = await fetch(API_URL, {
+    const res  = await fetch(url, {
       signal: ctrl.signal,
       cache: 'no-store',
       headers: { 'Cache-Control': 'no-cache' },
