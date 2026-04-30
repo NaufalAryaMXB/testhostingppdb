@@ -1,31 +1,14 @@
 {
-  "builds": [
-    {
-      "src": "backend/app/main.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "25mb"
-      }
-    },
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "assets/**",
-      "use": "@vercel/static"
-    }
-  ],
   "rewrites": [
-    { "source": "/auth/:path*", "destination": "/backend/app/main.py" },
-    { "source": "/auth", "destination": "/backend/app/main.py" },
-    { "source": "/schools/:path*", "destination": "/backend/app/main.py" },
-    { "source": "/schools", "destination": "/backend/app/main.py" },
-    { "source": "/zonasi/:path*", "destination": "/backend/app/main.py" },
-    { "source": "/zonasi", "destination": "/backend/app/main.py" },
-    { "source": "/map/:path*", "destination": "/backend/app/main.py" },
-    { "source": "/map", "destination": "/backend/app/main.py" },
-    { "source": "/operator/:path*", "destination": "/backend/app/main.py" },
-    { "source": "/operator", "destination": "/backend/app/main.py" }
+    { "source": "/auth/:path*", "destination": "/api/index.py" },
+    { "source": "/auth", "destination": "/api/index.py" },
+    { "source": "/schools/:path*", "destination": "/api/index.py" },
+    { "source": "/schools", "destination": "/api/index.py" },
+    { "source": "/zonasi/:path*", "destination": "/api/index.py" },
+    { "source": "/zonasi", "destination": "/api/index.py" },
+    { "source": "/map/:path*", "destination": "/api/index.py" },
+    { "source": "/map", "destination": "/api/index.py" },
+    { "source": "/operator/:path*", "destination": "/api/index.py" },
+    { "source": "/operator", "destination": "/api/index.py" }
   ]
 }
