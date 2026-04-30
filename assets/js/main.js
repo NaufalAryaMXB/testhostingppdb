@@ -233,8 +233,8 @@ function requestGeoloc() {
 
   navigator.geolocation.getCurrentPosition(
     ({ coords }) => {
-      const { latitude: lat, longitude: lng } = coords;
-      status.textContent = `✅ Terdeteksi: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      const { latitude: lat, longitude: lng, accuracy } = coords;
+      status.textContent = `✅ Terdeteksi: ${lat.toFixed(5)}, ${lng.toFixed(5)} (Akurasi: ${accuracy.toFixed(0)}m)`;
       status.className = 'gps-status success';
       btn.disabled = false;
       btn.textContent = '📡 Deteksi Lokasi Saya';
