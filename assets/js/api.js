@@ -49,7 +49,7 @@ const FALLBACK = [
 export async function fetchSekolah() {
   try {
     const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 5000);
+    const tid  = setTimeout(() => ctrl.abort(), 30000);
     const res  = await fetch(API_URL, {
       signal: ctrl.signal,
       cache: 'no-store',

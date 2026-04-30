@@ -99,7 +99,7 @@ def insert_schools(engine, schools):
             status,
             akreditasi
         )
-        SELECT
+        VALUES (
             :nama_sekolah,
             :npsn,
             :jenjang,
@@ -113,47 +113,49 @@ def insert_schools(engine, schools):
             :biaya,
             :status,
             :akreditasi
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM sekolah
-            WHERE npsn = :npsn
         )
     """)
 
     inserted = 0
     skipped = 0
 
-    with engine.begin() as conn:
-        reset_school_table(conn)
+    all_params = []
+    for school in schools:
+        latitude = school.get("lang")
+        longitude = school.get("long")
 
-        for school in schools:
-            latitude = school.get("lang")
-            longitude = school.get("long")
+        if latitude is None or longitude is None:
+            skipped += 1
+            continue
 
-            if latitude is None or longitude is None:
-                skipped += 1
-                continue
+        params = {
+            "nama_sekolah": clean_text(school.get("name")),
+            "npsn": clean_text(school.get("npsn")),
+            "jenjang": clean_text(school.get("grade")),
+            "alamat": clean_text(school.get("address")),
+            "kecamatan": clean_text(school.get("district_name")),
+            "latitude": latitude,
+            "longitude": longitude,
+            "kuota": 0,
+            "daya_tampung": 0,
+            "biaya": 0,
+            "status": normalize_status(school.get("status")),
+            "akreditasi": clean_text(school.get("accreditation")),
+        }
+        all_params.append(params)
+        inserted += 1
 
-            params = {
-                "nama_sekolah": clean_text(school.get("name")),
-                "npsn": clean_text(school.get("npsn")),
-                "jenjang": clean_text(school.get("grade")),
-                "alamat": clean_text(school.get("address")),
-                "kecamatan": clean_text(school.get("district_name")),
-                "latitude": latitude,
-                "longitude": longitude,
-                "kuota": 0,
-                "daya_tampung": 0,
-                "biaya": 0,
-                "status": normalize_status(school.get("status")),
-                "akreditasi": clean_text(school.get("accreditation")),
-            }
+    with engine.connect() as conn:
+        with conn.begin():
+            reset_school_table(conn)
 
-            result = conn.execute(insert_query, params)
-            if result.rowcount:
-                inserted += 1
-            else:
-                skipped += 1
+        if all_params:
+            chunk_size = 1000
+            for i in range(0, len(all_params), chunk_size):
+                chunk = all_params[i:i + chunk_size]
+                with conn.begin():
+                    conn.execute(insert_query, chunk)
+                print(f"Pushed {i + len(chunk)} / {len(all_params)} schools...")
 
     return inserted, skipped
 

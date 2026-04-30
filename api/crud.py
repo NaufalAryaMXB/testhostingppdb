@@ -67,7 +67,7 @@ def get_schools(
     if nama:
         query = query.filter(School.nama_sekolah.ilike(f"%{nama}%"))
 
-    return query.order_by(School.nama_sekolah.asc()).all()
+    return query.order_by(School.nama_sekolah.asc()).limit(1000).all()
 
 
 def get_school_by_id(db: Session, school_id: int):
