@@ -19,6 +19,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/api/ping")
+def ping():
+    return {"status": "ok"}
+
 app.include_router(router, prefix="/api")
 
 if ASSETS_DIR.exists():
