@@ -189,3 +189,26 @@ export async function getMySchool(userId) {
   if (!res.ok) return null;
   return res.json();
 }
+
+/**
+ * Mencari koordinat berdasarkan teks alamat menggunakan Nominatim (OSM)
+ */
+export async function searchAddress(query) {
+  if (!query || query.length < 3) return [];
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=id`;
+    const resp = await fetch(url, {
+      headers: { 'Accept-Language': 'id' }
+    });
+    const data = await resp.json();
+    
+    return data.map(item => ({
+      display: item.display_name,
+      lat: parseFloat(item.lat),
+      lng: parseFloat(item.lon)
+    }));
+  } catch (err) {
+    console.error('Alamat search error:', err);
+    return [];
+  }
+}

@@ -3,7 +3,7 @@
  * Mengelola routing halaman, 2-step zonasi flow,
  * dan menghubungkan semua modul.
  */
-import { fetchSekolah, fetchZonasiGeoJSON, fetchZonasiList, registerUser,  loginUser }   from './api.js';
+import { fetchSekolah, fetchZonasiGeoJSON, fetchZonasiList, registerUser,  loginUser, searchAddress }   from './api.js';
 import {
   initMapPage, renderMapMarkers, flyToOnMap,
   initZonasiPage, renderZonasiMarkers, flyToOnZonasi,
@@ -370,6 +370,71 @@ function bindKotaSearch() {
   submitBtn.addEventListener('click', () => {
     if (!_selectedKota) { showToast('Pilih kota terlebih dahulu', 'error'); return; }
     showZonasiResultStep(_selectedKota.lat, _selectedKota.lng, _selectedKota.name);
+  });
+}
+
+function bindAlamatSearch() {
+  const input = document.getElementById('input-alamat-search');
+  const btn = document.getElementById('btn-search-alamat');
+  const drop = document.getElementById('alamat-dropdown');
+
+  if (!input || !btn || !drop) return;
+
+  const doSearch = async () => {
+    const q = input.value.trim();
+    if (q.length < 3) {
+      showToast('Masukkan minimal 3 karakter', 'info');
+      return;
+    }
+    
+    btn.disabled = true;
+    btn.textContent = '...';
+    drop.innerHTML = '<div class="dropdown-item">Mencari...</div>';
+    drop.classList.add('open');
+
+    try {
+      const res = await searchAddress(q);
+      btn.disabled = false;
+      btn.textContent = 'Cari';
+
+      if (!res.length) {
+        drop.innerHTML = '<div class="dropdown-item">Alamat tidak ditemukan</div>';
+        return;
+      }
+
+      drop.innerHTML = res.map(item => `
+        <div class="dropdown-item" data-lat="${item.lat}" data-lng="${item.lng}">
+          ${item.display}
+        </div>
+      `).join('');
+
+      drop.querySelectorAll('.dropdown-item[data-lat]').forEach(el => {
+        el.addEventListener('click', () => {
+          const lat = parseFloat(el.dataset.lat);
+          const lng = parseFloat(el.dataset.lng);
+          const label = el.textContent.trim().split(',')[0];
+          
+          showZonasiResultStep(lat, lng, `📍 ${label}`);
+          drop.classList.remove('open');
+          input.value = label;
+          showToast('Lokasi berhasil diset!', 'success');
+        });
+      });
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Cari';
+      showToast('Gagal mencari alamat', 'error');
+    }
+  };
+
+  btn.addEventListener('click', doSearch);
+  input.addEventListener('keypress', (e) => { if (e.key === 'Enter') doSearch(); });
+
+  // Tutup dropdown saat klik di luar
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#tab-alamat')) {
+      drop.classList.remove('open');
+    }
   });
 }
 
@@ -908,6 +973,7 @@ async function boot() {
   initTabs();
   bindKoordinatSubmit();
   bindKotaSearch();
+  bindAlamatSearch();
   bindEvents();
   bindAuthEvents();
   updateUIForLoggedInUser();

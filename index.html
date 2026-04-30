@@ -298,6 +298,7 @@
                 <button class="loc-tab active" data-tab="gps">GPS Saat Ini</button>
                 <button class="loc-tab" data-tab="koordinat">Koordinat</button>
                 <button class="loc-tab" data-tab="kota">Kota/Kabupaten</button>
+                <button class="loc-tab" data-tab="alamat">Cari Alamat</button>
               </div>
 
               <div class="loc-tab-panel active" id="tab-gps">
@@ -330,6 +331,17 @@
                 </div>
                 <div id="kota-selected-info" class="status-text"></div>
                 <button class="btn-glow full-w" id="btn-submit-kota" disabled>Pakai wilayah ini</button>
+              </div>
+
+              <div class="loc-tab-panel" id="tab-alamat">
+                <p class="tab-desc">Ketik nama alamat, jalan, atau desa (misal: "Bojongsoang").</p>
+                <div class="fg">
+                  <div class="search-input-group">
+                    <input type="text" id="input-alamat-search" class="fi" placeholder="Masukkan alamat lengkap"/>
+                    <button id="btn-search-alamat" class="btn-sm-glow">Cari</button>
+                  </div>
+                  <div id="alamat-dropdown" class="dropdown-list"></div>
+                </div>
               </div>
 
               <div class="radius-wrap">
