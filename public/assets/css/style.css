@@ -2336,14 +2336,18 @@ a{text-decoration:none;color:inherit}
     width:100%;
     justify-content:flex-start;
     flex-wrap:nowrap;
-    gap:18px;
+    gap:16px;
     overflow-x:auto;
-    padding:2px 0 8px;
+    padding:2px 18px 8px 0;
     scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
   }
 
   .site-nav::-webkit-scrollbar{display:none}
-  .site-nav .nav-link{white-space:nowrap}
+  .site-nav .nav-link{
+    white-space:nowrap;
+    font-size:16px;
+  }
 
   .site-actions{
     margin-left:auto;
@@ -2509,27 +2513,7 @@ a{text-decoration:none;color:inherit}
     grid-template-columns:1fr;
   }
 
-  .bottom-nav{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    position:sticky;
-    bottom:0;
-    background:#fffef8;
-    border-top:1px solid var(--pub-line);
-    z-index:30;
-  }
-
-  .bnav-btn{
-    min-height:56px;
-    border:0;
-    background:none;
-    color:var(--pub-muted);
-    font-weight:700;
-  }
-
-  .bnav-btn.active{
-    color:var(--pub-navy);
-  }
+  .bottom-nav{display:none!important}
 }
 
 /* Layout fixes for separated public pages */
@@ -2626,6 +2610,18 @@ body{
   .navbar-right .btn-nav-auth{
     padding:9px 12px;
     font-size:14px;
+  }
+
+  .site-nav{
+    gap:14px;
+  }
+
+  .site-nav .nav-link{
+    font-size:15px;
+  }
+
+  .public-page{
+    padding-bottom:24px;
   }
 
   .workspace-filters{
