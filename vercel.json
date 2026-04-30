@@ -2,10 +2,6 @@
   "version": 2,
   "routes": [
     {
-      "src": "^/assets/(.*)$",
-      "dest": "/api/index.py"
-    },
-    {
       "src": "^/api(?:/(.*))?$",
       "dest": "/api/index.py"
     },

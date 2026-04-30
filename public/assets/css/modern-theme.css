@@ -1,0 +1,151 @@
+/*
+ * modern-theme.css
+ * Override file style.css lama untuk desain UI/UX modern
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --secondary: #0EA5E9;
+  
+  --bg-base: rgba(248, 250, 252, 0.6);
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  
+  --card-radius: 20px;
+  --btn-radius: 12px;
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body, html {
+  font-family: 'Outfit', 'Inter', sans-serif !important;
+  color: var(--text-main);
+  background: transparent; /* biar mesh-bg terlihat */
+}
+
+/* ─── ANIMATED MESH GRADIENT ─── */
+.mesh-bg {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.15), transparent 30%),
+              radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 30%);
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  animation: mesh-move 15s ease-in-out infinite alternate;
+}
+@keyframes mesh-move {
+  0% { transform: scale(1) translate(0,0); }
+  50% { transform: scale(1.1) translate(2%, -2%); }
+  100% { transform: scale(1) translate(-2%, 2%); }
+}
+
+/* ─── NAVBAR OVERRIDE ─── */
+.navbar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+  height: 64px;
+}
+.navbar-brand { color: var(--text-main) !important; }
+.logo-icon { filter: drop-shadow(0 2px 4px rgba(79,70,229,0.3)); }
+.logo-text { background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-link { color: var(--text-muted) !important; font-weight: 600 !important; }
+.nav-link:hover, .nav-link.active { color: var(--primary) !important; border-bottom-color: var(--primary) !important; }
+
+/* ─── BUTTONS OVERRIDE ─── */
+.btn {
+  border-radius: var(--btn-radius) !important;
+  font-family: 'Outfit', sans-serif !important;
+  letter-spacing: 0.3px;
+  transition: var(--transition-smooth) !important;
+}
+.btn-blue, .btn-dash-primary {
+  background: var(--primary) !important;
+  box-shadow: 0 4px 12px rgba(79,70,229,0.25) !important;
+}
+.btn-blue:hover, .btn-dash-primary:hover {
+  background: var(--primary-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79,70,229,0.35) !important;
+}
+
+/* ─── CARDS OVERRIDE ─── */
+.home-card, .zonasi-form-card, .auth-card, .profile-field-list, .dash-table-wrap, .dash-sidebar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--card-radius) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+.home-card { padding: 24px !important; transition: var(--transition-smooth); }
+.home-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(31, 38, 135, 0.1) !important; }
+
+/* ─── LIST ITEMS ─── */
+.flat-list-item {
+  background: rgba(255,255,255,0.7) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--glass-border) !important;
+  margin-bottom: 8px;
+  transition: var(--transition-smooth) !important;
+}
+.flat-list-item:hover { transform: translateX(4px); box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important; }
+.flat-list-item.active { background: #EEF2FF !important; border-color: var(--primary) !important; }
+
+/* ─── INPUTS & FORMS ─── */
+.auth-input, .loc-input, .filter-select, .filter-input, .mf-input, .dash-search, .dash-filter-select {
+  border-radius: 10px !important;
+  border: 1px solid #CBD5E1 !important;
+  background: rgba(255,255,255,0.8) !important;
+  transition: var(--transition-smooth) !important;
+}
+.auth-input:focus, .loc-input:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 4px rgba(79,70,229,0.1) !important; background: white !important; }
+
+/* ─── HERO BANNER ─── */
+.hero-banner { background: transparent !important; }
+.hero-banner h1 { font-family: 'Outfit', sans-serif; color: var(--text-main) !important; }
+
+/* ─── TABLES ─── */
+.school-table th, .dash-table th { background: rgba(241, 245, 249, 0.6) !important; font-family: 'Outfit', sans-serif; font-size: 13px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+.school-table td, .dash-table td { background: transparent !important; }
+.school-table tr:hover td { background: rgba(255,255,255,0.5) !important; }
+
+/* ─── MAP FILTER BOX ─── */
+.filter-box, .zonasi-ctrl-panel {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+.map-with-filter { border-radius: 0 0 24px 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+/* ─── DASHBOARD FIXES ─── */
+.dash-page { background: transparent !important; }
+.dash-sidebar { border-right: none !important; margin: 16px; border-radius: 20px !important; height: calc(100vh - 32px); }
+.dash-title { font-family: 'Outfit', sans-serif; }
+.dash-content { padding: 20px 32px !important; }
+
+/* ─── AUTH FIXES ─── */
+.auth-page { background: transparent !important; }
+.auth-header { background: rgba(255,255,255,0.3) !important; font-family: 'Outfit', sans-serif; border-bottom: 1px solid var(--glass-border); }
+.auth-body { padding-top: 24px !important; }
+.auth-card { animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── LOADING ANIMATION OVERRIDE ─── */
+.loading-overlay { background: rgba(255,255,255,0.7) !important; backdrop-filter: blur(8px) !important; }
+.spinner { border-top-color: var(--primary) !important; border-left-color: var(--primary) !important; animation: spin-fast 0.6s linear infinite !important; }
+@keyframes spin-fast { to { transform: rotate(360deg); } }
+
