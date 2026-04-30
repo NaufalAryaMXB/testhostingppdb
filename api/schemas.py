@@ -21,7 +21,7 @@ class SchoolResponse(BaseModel):
 
     sekolah_id: int
     nama_sekolah: str
-    npsn: str | None = None
+    npsn: str | int | None = None
     jenjang: str | None = None
     alamat: str | None = None
     kecamatan: str | None = None
@@ -39,7 +39,7 @@ class SchoolMapResponse(BaseModel):
 
     sekolah_id: int
     nama_sekolah: str
-    npsn: str | None = None
+    npsn: str | int | None = None
     jenjang: str | None = None
     kecamatan: str | None = None
     latitude: float | None = None
