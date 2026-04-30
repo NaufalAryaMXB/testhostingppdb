@@ -1,28 +1,25 @@
 {
-  "version": 2,
   "builds": [
     {
       "src": "backend/app/main.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb"
+        "maxLambdaSize": "25mb"
       }
     }
   ],
-  "routes": [
-    { "src": "/auth/(.*)", "dest": "backend/app/main.py" },
-    { "src": "/auth", "dest": "backend/app/main.py" },
-    { "src": "/schools/(.*)", "dest": "backend/app/main.py" },
-    { "src": "/schools", "dest": "backend/app/main.py" },
-    { "src": "/zonasi/(.*)", "dest": "backend/app/main.py" },
-    { "src": "/zonasi", "dest": "backend/app/main.py" },
-    { "src": "/map/(.*)", "dest": "backend/app/main.py" },
-    { "src": "/operator/(.*)", "dest": "backend/app/main.py" },
-    { "src": "/assets/(.*)", "dest": "frontend/assets/$1" },
-    { "src": "/(.*\\.html)$", "dest": "frontend/$1" },
-    { "src": "/(.*\\.css)$", "dest": "frontend/$1" },
-    { "src": "/(.*\\.js)$", "dest": "frontend/$1" },
-    { "src": "/", "dest": "frontend/index.html" }
-  ],
-  "outputDirectory": "."
+  "rewrites": [
+    { "source": "/auth/:path*", "destination": "/backend/app/main.py" },
+    { "source": "/auth", "destination": "/backend/app/main.py" },
+    { "source": "/schools/:path*", "destination": "/backend/app/main.py" },
+    { "source": "/schools", "destination": "/backend/app/main.py" },
+    { "source": "/zonasi/:path*", "destination": "/backend/app/main.py" },
+    { "source": "/zonasi", "destination": "/backend/app/main.py" },
+    { "source": "/map/:path*", "destination": "/backend/app/main.py" },
+    { "source": "/map", "destination": "/backend/app/main.py" },
+    { "source": "/operator/:path*", "destination": "/backend/app/main.py" },
+    { "source": "/operator", "destination": "/backend/app/main.py" },
+    { "source": "/", "destination": "/frontend/index.html" },
+    { "source": "/:path*", "destination": "/frontend/:path*" }
+  ]
 }
