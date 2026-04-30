@@ -217,6 +217,17 @@ window.onUserMarkerDrag = (lat, lng) => {
 /* ══════════════════════════════════════════════════
    GEOLOCATION
 ══════════════════════════════════════════════════ */
+const GEO_ACCEPTABLE_ACCURACY_M = 100;
+const GEO_POOR_ACCURACY_M = 1000;
+const GEO_SAMPLE_TIMEOUT_MS = 15000;
+
+function formatAccuracyMeters(accuracy) {
+  if (!Number.isFinite(accuracy)) return 'akurasi tidak tersedia';
+  return accuracy >= 1000
+    ? `akurasi sekitar ${(accuracy / 1000).toFixed(1)} km`
+    : `akurasi sekitar ${accuracy.toFixed(0)} m`;
+}
+
 function requestGeoloc() {
   const btn    = document.getElementById('btn-geoloc');
   const status = document.getElementById('gps-status');
@@ -227,36 +238,80 @@ function requestGeoloc() {
   }
 
   btn.disabled = true;
-  btn.textContent = '⏳ Mendeteksi lokasi…';
-  status.textContent = '🔄 Sedang mendeteksi koordinat GPS…';
+  btn.textContent = 'Mendeteksi lokasi...';
+  status.textContent = 'Mencari lokasi terbaik dari perangkat...';
   status.className = 'gps-status detecting';
 
-  navigator.geolocation.getCurrentPosition(
-    ({ coords }) => {
-      const { latitude: lat, longitude: lng, accuracy } = coords;
-      status.textContent = `✅ Terdeteksi: ${lat.toFixed(5)}, ${lng.toFixed(5)} (Akurasi: ${accuracy.toFixed(0)}m)`;
-      status.className = 'gps-status success';
-      btn.disabled = false;
-      btn.textContent = '📡 Deteksi Lokasi Saya';
+  let bestCoords = null;
+  let watchId = null;
+  let done = false;
 
-      const label = `GPS (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-      showZonasiResultStep(lat, lng, label);
-      showToast('Lokasi berhasil dideteksi ✅', 'success');
+  const resetButton = () => {
+    btn.disabled = false;
+    btn.textContent = 'Deteksi Lokasi Saya';
+  };
+
+  const showLocation = (coords) => {
+    if (done || !coords) return;
+    done = true;
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+
+    const { latitude: lat, longitude: lng, accuracy } = coords;
+    const accuracyText = formatAccuracyMeters(accuracy);
+    const isPoor = Number.isFinite(accuracy) && accuracy > GEO_POOR_ACCURACY_M;
+    const labelPrefix = isPoor ? 'Lokasi Perkiraan' : 'GPS';
+
+    status.textContent = isPoor
+      ? `Lokasi kurang akurat: ${lat.toFixed(5)}, ${lng.toFixed(5)} (${accuracyText}). Geser pin jika tidak tepat.`
+      : `Terdeteksi: ${lat.toFixed(5)}, ${lng.toFixed(5)} (${accuracyText})`;
+    status.className = isPoor ? 'gps-status detecting' : 'gps-status success';
+    resetButton();
+
+    const label = `${labelPrefix} (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+    showZonasiResultStep(lat, lng, label);
+    showToast(isPoor ? 'Lokasi perangkat kurang akurat. Geser pin jika perlu.' : 'Lokasi berhasil dideteksi', isPoor ? 'info' : 'success');
+  };
+
+  const showError = (err) => {
+    if (done) return;
+    done = true;
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+
+    const msgs = {
+      1: 'Akses lokasi ditolak. Izinkan lokasi di browser.',
+      2: 'Posisi tidak dapat ditentukan.',
+      3: 'Timeout mendeteksi lokasi.',
+    };
+    status.textContent = msgs[err?.code] || 'Gagal mendapat lokasi';
+    status.className = 'gps-status error';
+    resetButton();
+    showToast(msgs[err?.code] || 'Gagal mendapat lokasi', 'error');
+  };
+
+  const options = { enableHighAccuracy: true, timeout: GEO_SAMPLE_TIMEOUT_MS, maximumAge: 0 };
+
+  watchId = navigator.geolocation.watchPosition(
+    ({ coords }) => {
+      if (!bestCoords || (Number.isFinite(coords.accuracy) && coords.accuracy < bestCoords.accuracy)) {
+        bestCoords = coords;
+        status.textContent = `Membaca lokasi... ${formatAccuracyMeters(coords.accuracy)}`;
+      }
+
+      if (Number.isFinite(coords.accuracy) && coords.accuracy <= GEO_ACCEPTABLE_ACCURACY_M) {
+        showLocation(coords);
+      }
     },
     (err) => {
-      const msgs = {
-        1: '❌ Akses lokasi ditolak. Izinkan di browser.',
-        2: '❌ Posisi tidak dapat ditentukan.',
-        3: '❌ Timeout mendeteksi lokasi.',
-      };
-      status.textContent = msgs[err.code] || '❌ Gagal mendapat lokasi';
-      status.className = 'gps-status error';
-      btn.disabled = false;
-      btn.textContent = '📡 Deteksi Lokasi Saya';
-      showToast(msgs[err.code] || 'Gagal mendapat lokasi', 'error');
+      if (bestCoords) showLocation(bestCoords);
+      else showError(err);
     },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    options
   );
+
+  setTimeout(() => {
+    if (bestCoords) showLocation(bestCoords);
+    else showError({ code: 3 });
+  }, GEO_SAMPLE_TIMEOUT_MS);
 }
 
 /* ══════════════════════════════════════════════════
