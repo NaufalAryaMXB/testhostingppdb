@@ -34,6 +34,10 @@ let _mapSearchName = '';
 let _zonFilterKat  = '';
 const MAX_ZONASI_MARKERS = 300;
 let _mapZonasiKecamatan = '';
+let _mapFilterAkreditasi = '';
+let _mapFilterBiayaMax = '';
+let _zonFilterAkreditasi = '';
+let _zonFilterBiayaMax = '';
 let _zonasiKecamatan = '';
 let _zonasiKecamatanOptions = [];
 
@@ -403,7 +407,8 @@ function filterSchoolsByKecamatan(schools, selectedKecamatan) {
 
   return schools.filter((school) => {
     const schoolKecamatan = normalizeKecamatanName(school.kecamatan || '');
-    return schoolKecamatan === selected;
+    // Gunakan includes agar lebih fleksibel (misal: "Depok, Cimanggis" cocok dengan "Cimanggis")
+    return schoolKecamatan.includes(selected);
   });
 }
 
@@ -440,7 +445,12 @@ function renderMapPage() {
   }
 
   const schools  = getSchools();
-  const baseFiltered = filterSchools(schools, { nama: _mapSearchName, kat: _mapFilterKat });
+  const baseFiltered = filterSchools(schools, { 
+    nama: _mapSearchName, 
+    kat: _mapFilterKat,
+    akreditasi: _mapFilterAkreditasi,
+    biayaMax: _mapFilterBiayaMax
+  });
   const filtered = _mapZonasiKecamatan
     ? filterSchoolsByKecamatan(baseFiltered, _mapZonasiKecamatan)
     : baseFiltered;
@@ -456,7 +466,11 @@ function renderMapPage() {
 
 function renderZonasiPage() {
   const schools  = getSchools();
-  const baseFiltered = filterSchools(schools, { kat: _zonFilterKat });
+  const baseFiltered = filterSchools(schools, { 
+    kat: _zonFilterKat,
+    akreditasi: _zonFilterAkreditasi,
+    biayaMax: _zonFilterBiayaMax
+  });
   const areaFiltered = _zonasiKecamatan
     ? filterSchoolsByKecamatan(baseFiltered, _zonasiKecamatan)
     : filterSchoolsByRadius(baseFiltered);
@@ -684,10 +698,13 @@ function bindEvents() {
   document.getElementById('map-apply').addEventListener('click', async () => {
     _mapFilterKat = document.getElementById('map-kat').value;
     _mapZonasiKecamatan = document.getElementById('map-kecamatan-zonasi').value;
+    _mapFilterAkreditasi = document.getElementById('filter-akreditasi')?.value || '';
+    _mapFilterBiayaMax = document.getElementById('filter-biaya')?.value || '';
     
     showLoading();
     try {
       const { data } = await fetchSekolah({ kat: _mapFilterKat, kecamatan: _mapZonasiKecamatan });
+      console.log(`[Map] Fetched ${data.length} schools for ${_mapZonasiKecamatan}`);
       setSchools(data);
       _mapPageNum = 1; 
       renderMapPage();
@@ -729,10 +746,13 @@ function bindEvents() {
   document.getElementById('zon-apply').addEventListener('click', async () => {
     _zonFilterKat = document.getElementById('zon-kat').value;
     _zonasiKecamatan = document.getElementById('zon-kecamatan-zonasi').value;
+    _zonFilterAkreditasi = document.getElementById('zon-filter-akreditasi')?.value || '';
+    _zonFilterBiayaMax = document.getElementById('zon-filter-biaya')?.value || '';
     
     showLoading();
     try {
       const { data } = await fetchSekolah({ kat: _zonFilterKat, kecamatan: _zonasiKecamatan });
+      console.log(`[Zonasi] Fetched ${data.length} schools for ${_zonasiKecamatan}`);
       setSchools(data);
       _zonasiPageNum = 1; 
       renderZonasiPage();

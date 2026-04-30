@@ -47,11 +47,15 @@ export function uniqueKecamatan(schools) {
 
 /** Filter sekolah berdasarkan nama, kategori, biaya */
 export function filterSchools(schools, { nama = '', kat = '', biayaMax = '', akreditasi='' } = {}) {
+  const q = nama.toLowerCase().trim();
+  const k = kat.toUpperCase().trim();
+  const a = akreditasi.toUpperCase().trim();
+
   return schools.filter(s => {
-    const okNama = !nama || s.nama.toLowerCase().includes(nama.toLowerCase());
-    const okKat  = !kat  || s.nama.toUpperCase().startsWith(kat);
-    const okAkr  = !akreditasi || s.akreditasi === akreditasi;
-    const okBiaya = !biayaMax || s.biaya <= biayaMax;
+    const okNama = !q || (s.nama || '').toLowerCase().includes(q);
+    const okKat  = !k || (s.jenjang || '').toUpperCase() === k;
+    const okAkr  = !a || (s.akreditasi || '').toUpperCase() === a;
+    const okBiaya = !biayaMax || Number(s.biaya || 0) <= Number(biayaMax);
     return okNama && okKat && okAkr && okBiaya;
   });
 }
