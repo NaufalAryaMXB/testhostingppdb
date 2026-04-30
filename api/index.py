@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from mangum import Mangum
-from .api import router
+from api.api import router
 
 app = FastAPI()
 BASE_DIR = Path(__file__).resolve().parent.parent
