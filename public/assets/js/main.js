@@ -34,6 +34,10 @@ let _mapSearchName = '';
 let _zonFilterKat  = '';
 const MAX_ZONASI_MARKERS = 300;
 let _mapZonasiKecamatan = '';
+let _mapFilterAkreditasi = '';
+let _mapFilterBiayaMax = '';
+let _zonFilterAkreditasi = '';
+let _zonFilterBiayaMax = '';
 let _zonasiKecamatan = '';
 let _zonasiKecamatanOptions = [];
 
@@ -403,7 +407,8 @@ function filterSchoolsByKecamatan(schools, selectedKecamatan) {
 
   return schools.filter((school) => {
     const schoolKecamatan = normalizeKecamatanName(school.kecamatan || '');
-    return schoolKecamatan === selected;
+    // Gunakan includes agar lebih fleksibel (misal: "Depok, Cimanggis" cocok dengan "Cimanggis")
+    return schoolKecamatan.includes(selected);
   });
 }
 
@@ -440,7 +445,12 @@ function renderMapPage() {
   }
 
   const schools  = getSchools();
-  const baseFiltered = filterSchools(schools, { nama: _mapSearchName, kat: _mapFilterKat });
+  const baseFiltered = filterSchools(schools, { 
+    nama: _mapSearchName, 
+    kat: _mapFilterKat,
+    akreditasi: _mapFilterAkreditasi,
+    biayaMax: _mapFilterBiayaMax
+  });
   const filtered = _mapZonasiKecamatan
     ? filterSchoolsByKecamatan(baseFiltered, _mapZonasiKecamatan)
     : baseFiltered;
@@ -456,7 +466,11 @@ function renderMapPage() {
 
 function renderZonasiPage() {
   const schools  = getSchools();
-  const baseFiltered = filterSchools(schools, { kat: _zonFilterKat });
+  const baseFiltered = filterSchools(schools, { 
+    kat: _zonFilterKat,
+    akreditasi: _zonFilterAkreditasi,
+    biayaMax: _zonFilterBiayaMax
+  });
   const areaFiltered = _zonasiKecamatan
     ? filterSchoolsByKecamatan(baseFiltered, _zonasiKecamatan)
     : filterSchoolsByRadius(baseFiltered);
@@ -681,42 +695,95 @@ function bindEvents() {
   // Map pagination & filter
   document.getElementById('map-prev').addEventListener('click', () => { _mapPageNum--; renderMapPage(); });
   document.getElementById('map-next').addEventListener('click', () => { _mapPageNum++; renderMapPage(); });
-  document.getElementById('map-apply').addEventListener('click', () => {
+  document.getElementById('map-apply').addEventListener('click', async () => {
     _mapFilterKat = document.getElementById('map-kat').value;
     _mapZonasiKecamatan = document.getElementById('map-kecamatan-zonasi').value;
-    _mapPageNum = 1; renderMapPage();
-    syncZonasiOutline('map');
-    showToast('Filter diterapkan', 'success');
+    _mapFilterAkreditasi = document.getElementById('filter-akreditasi')?.value || '';
+    _mapFilterBiayaMax = document.getElementById('filter-biaya')?.value || '';
+    
+    showLoading();
+    try {
+      const { data } = await fetchSekolah({ kat: _mapFilterKat, kecamatan: _mapZonasiKecamatan });
+      console.log(`[Map] Fetched ${data.length} schools for ${_mapZonasiKecamatan}`);
+      setSchools(data);
+      _mapPageNum = 1; 
+      renderMapPage();
+      syncZonasiOutline('map');
+      showToast('Filter diterapkan', 'success');
+    } catch (err) {
+      console.error('Map filter fetch error:', err);
+      showToast('Gagal memuat data filter', 'error');
+    } finally {
+      hideLoading();
+    }
   });
-  document.getElementById('map-clear').addEventListener('click', () => {
+  document.getElementById('map-clear').addEventListener('click', async () => {
     _mapFilterKat = '';
     _mapZonasiKecamatan = '';
     _mapSearchName = '';
     document.getElementById('map-kat').value = '';
     document.getElementById('map-kecamatan-zonasi').value = '';
     document.getElementById('global-search').value = '';
-    _mapPageNum = 1; renderMapPage();
-    clearMapZonasiOutline();
+    
+    showLoading();
+    try {
+      const { data } = await fetchSekolah();
+      setSchools(data);
+      _mapPageNum = 1; 
+      renderMapPage();
+      clearMapZonasiOutline();
+      showToast('Filter dibersihkan', 'info');
+    } catch (err) {
+      showToast('Gagal mereset data', 'error');
+    } finally {
+      hideLoading();
+    }
   });
 
   // Zonasi pagination & filter
   document.getElementById('zon-prev').addEventListener('click', () => { _zonasiPageNum--; renderZonasiPage(); });
   document.getElementById('zon-next').addEventListener('click', () => { _zonasiPageNum++; renderZonasiPage(); });
-  document.getElementById('zon-apply').addEventListener('click', () => {
+  document.getElementById('zon-apply').addEventListener('click', async () => {
     _zonFilterKat = document.getElementById('zon-kat').value;
     _zonasiKecamatan = document.getElementById('zon-kecamatan-zonasi').value;
-    _zonasiPageNum = 1; renderZonasiPage();
-    syncZonasiOutline('zonasi');
-    showToast('Filter diterapkan', 'success');
+    _zonFilterAkreditasi = document.getElementById('zon-filter-akreditasi')?.value || '';
+    _zonFilterBiayaMax = document.getElementById('zon-filter-biaya')?.value || '';
+    
+    showLoading();
+    try {
+      const { data } = await fetchSekolah({ kat: _zonFilterKat, kecamatan: _zonasiKecamatan });
+      console.log(`[Zonasi] Fetched ${data.length} schools for ${_zonasiKecamatan}`);
+      setSchools(data);
+      _zonasiPageNum = 1; 
+      renderZonasiPage();
+      syncZonasiOutline('zonasi');
+      showToast('Filter diterapkan', 'success');
+    } catch (err) {
+      showToast('Gagal memuat data filter', 'error');
+    } finally {
+      hideLoading();
+    }
   });
-  document.getElementById('zon-clear').addEventListener('click', () => {
+  document.getElementById('zon-clear').addEventListener('click', async () => {
     _zonFilterKat = '';
     _zonasiKecamatan = '';
     document.getElementById('zon-kat').value = '';
     document.getElementById('zon-kecamatan-zonasi').value = '';
-    _zonasiPageNum = 1; renderZonasiPage();
-    clearZonasiOutline();
-    setOutlineStatus('zon-zonasi-status', 'Pilih kecamatan untuk menampilkan batas zonasi.');
+    
+    showLoading();
+    try {
+      const { data } = await fetchSekolah();
+      setSchools(data);
+      _zonasiPageNum = 1; 
+      renderZonasiPage();
+      clearZonasiOutline();
+      setOutlineStatus('zon-zonasi-status', 'Pilih kecamatan untuk menampilkan batas zonasi.');
+      showToast('Filter dibersihkan', 'info');
+    } catch (err) {
+      showToast('Gagal mereset data', 'error');
+    } finally {
+      hideLoading();
+    }
   });
 
   // Tombol Ganti Lokasi → kembali ke Step 1
@@ -752,15 +819,30 @@ function bindEvents() {
 
   // Global search
   document.getElementById('global-search').addEventListener('input',
-    debounce(e => {
+    debounce(async e => {
       const q = e.target.value.trim();
       const active = document.querySelector('.page.active')?.id;
       if (active === 'page-map' && _mapInitDone) {
         _mapSearchName = q;
-        _mapPageNum = 1;
-        renderMapPage();
+        
+        // Fetch from server for better search across 24k+ records
+        showLoading();
+        try {
+          const { data } = await fetchSekolah({ 
+            kat: _mapFilterKat, 
+            kecamatan: _mapZonasiKecamatan,
+            nama: q 
+          });
+          setSchools(data);
+          _mapPageNum = 1;
+          renderMapPage();
+        } catch (err) {
+          console.error('Search fetch error:', err);
+        } finally {
+          hideLoading();
+        }
       }
-    }, 300)
+    }, 500) // Increased debounce for server fetch
   );
 
   // Carousel dummy
